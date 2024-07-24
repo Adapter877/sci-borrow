@@ -19,7 +19,7 @@ jobs:
       id-token: write
 
     outputs:
-      image_tags: ${{ steps.meta.outputs.tags }}
+      image_tags: ${{ steps.sanitize-tag.outputs.sanitized_tags }}
       
     steps:
       - name: Checkout repository
@@ -50,6 +50,14 @@ jobs:
           tags: |
             type=sha,prefix={{branch}}-,format=short
 
+      - name: Sanitize tag
+        id: sanitize-tag
+        run: |
+          TAGS="${{ steps.meta.outputs.tags }}"
+          SANITIZED_TAGS=$(echo "$TAGS" | sed -e 's/[^a-zA-Z0-9_.-]//g')
+          echo "sanitized_tags=$SANITIZED_TAGS" >> $GITHUB_ENV
+          echo "::set-output name=sanitized_tags::$SANITIZED_TAGS"
+
       - name: Build and push Docker image
         id: build-and-push
         uses: docker/build-push-action@v4
@@ -60,12 +68,12 @@ jobs:
             VERSION=${{ steps.meta.outputs.version }}
             REVISION=${{ steps.meta.outputs.revision }}
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
+          tags: ${{ steps.sanitize-tag.outputs.sanitized_tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
       - name: Set output tags
         id: output
-        run: echo "image_tags=${{ steps.meta.outputs.tags }}" >> $GITHUB_ENV
+        run: echo "image_tags=${{ steps.sanitize-tag.outputs.sanitized_tags }}" >> $GITHUB_ENV
 
   deploy:
     needs: build
@@ -91,7 +99,6 @@ jobs:
           git add deployment/deployment.yaml
           git commit -m "Set 'web' image tag to '${{ env.image_tags }}'"
 
-      
-          
+     
       - name: Push changes
         run: git push
