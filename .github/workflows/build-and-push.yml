@@ -51,6 +51,7 @@ jobs:
             type=semver,prefix=web-,pattern={{version}}
           flavor: |
             latest=false
+
       - name: Build and push Docker image
         id: build-and-push
         uses: docker/build-push-action@v4
@@ -61,9 +62,10 @@ jobs:
             VERSION=${{ steps.meta.outputs.version }}
             REVISION=${{ steps.meta.outputs.revision }}
           push: true
-          tags: ghcr.io/adapter877/sci-borrow:${{ steps.meta.outputs.tags }}
+          tags: |
+            ghcr.io/adapter877/sci-borrow:latest
+            ghcr.io/adapter877/sci-borrow:${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          
 
   deploy:
     needs: build
