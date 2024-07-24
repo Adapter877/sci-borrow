@@ -45,10 +45,7 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
-            type=semver,prefix=web-,pattern={{version}}
-          flavor: |
-            latest=false
-
+            type=sha,prefix={{branch}}-,format=short
       
 
   deploy:
