@@ -19,7 +19,7 @@ jobs:
       id-token: write
 
     outputs:
-      image_tags: ${{ steps.meta.outputs.tags }}
+      image_tags: ${{ steps.output.outputs.tags }}
       
     steps:
       - name: Checkout repository
@@ -92,8 +92,6 @@ jobs:
           sed -i 's|ghcr.io/adapter877/sci-borrow:.*|ghcr.io/adapter877/sci-borrow:${{ needs.build.outputs.image_tags }}|' deployment/deployment.yaml
           git add deployment/deployment.yaml
           git commit -m "Set 'web' image tag to '${{ needs.build.outputs.image_tags }}'"
-
-      
 
       - name: Push changes
         run: git push
