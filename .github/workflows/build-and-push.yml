@@ -48,7 +48,7 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
-            type=semver,prefix=api-,pattern={{version}}
+            type=semver,prefix=web-,pattern={{version}}
           flavor: |
             latest=false
 
@@ -58,9 +58,9 @@ jobs:
         with:
           context: .
           build-args: |
-            BUILDTIME=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.created'] }}
-            VERSION=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }}
-            REVISION=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.revision'] }}
+            BUILDTIME=${{ steps.meta.outputs.created }}
+            VERSION=${{ steps.meta.outputs.version }}
+            REVISION=${{ steps.meta.outputs.revision }}
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
@@ -78,7 +78,7 @@ jobs:
       - name: Checkout gitops repository
         uses: actions/checkout@v3
         with:
-          repository: SAKSIAM-TECH/sak-gitops
+          repository: Adapter877/sci-borrow
           ref: main
           token: ${{ secrets.GH_PAT }}
 
