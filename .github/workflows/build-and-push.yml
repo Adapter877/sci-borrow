@@ -52,20 +52,14 @@ jobs:
           flavor: |
             latest=false
 
-      - name: Build and push Docker image
-        id: build-and-push
-        uses: docker/build-push-action@v4
-        with:
-          context: .
-          build-args: |
-            BUILDTIME=${{ steps.meta.outputs.created }}
-            VERSION=${{ steps.meta.outputs.version }}
-            REVISION=${{ steps.meta.outputs.revision }}
-          push: true
-          tags: |
-            ghcr.io/adapter877/sci-borrow:latest
-            ghcr.io/adapter877/sci-borrow:${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+            - name: Extract Docker metadata
+            id: meta
+            uses: docker/metadata-action@v4
+            with:
+              images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+              tags: |
+                type=semver,prefix=web-,pattern={{version}}
+          
 
   deploy:
     needs: build
