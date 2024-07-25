@@ -23,7 +23,7 @@ return array (
   'inventory_w' => 600,
   'borrow_no' => '%04d',
   'borrow_prefix' => 'B%Y%M-',
-  'password_key' => '66a1f8451433a',
-  'reversion' => 1721890885,
+  'password_key' => '66a1fa5a59c3e',
+  'reversion' => 1721891418,
   'stored_img_type' => '.jpg',
 );
