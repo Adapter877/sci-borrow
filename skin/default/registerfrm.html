@@ -12,6 +12,9 @@
     </h2>
     <fieldset>
       <label class="g-input icon-user">
+        <input type=text name=register_name id=register_name maxlength=150 title="{LNG_Please fill in} {LNG_Name}" placeholder="{LNG_Name}">
+      </label>
+      <label class="g-input icon-user">
         <input type=text name=register_username id=register_username title="{LNG_Please fill in} {PLACEHOLDER}" maxlength=50 placeholder="{PLACEHOLDER}">
       </label>
       <label class="g-input icon-password">
@@ -20,9 +23,7 @@
       <label class="g-input icon-password">
         <input class=showpassword type=password name=register_repassword id=register_repassword maxlength=50 title="{LNG_Enter your password again}" placeholder="{LNG_Confirm password}">
       </label>
-      <label class="g-input icon-user">
-        <input type=text name=register_name id=register_name maxlength=150 title="{LNG_Please fill in} {LNG_Name}" placeholder="{LNG_Name}">
-      </label>
+
       {CATEGORIES}
     </fieldset>
     <fieldset class="accept_term">

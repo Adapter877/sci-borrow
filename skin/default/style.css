@@ -292,17 +292,27 @@ header.header a {
   min-height: 100vh;
 }
 .footer p {
-  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2) inset;
-  text-align: center;
-  text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.2);
-  color: rgba(0, 0, 0, 0.4);
-  background-color: rgba(0, 0, 0, 0.02);
+  /* box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2) inset; */
+  text-align: right;
+  /* text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.2); */
+  color: rgb(0, 0, 0);
+  background-color: rgba(115, 115, 115, 0.251);
   margin: 0;
   padding: 10px;
 }
 .footer a {
   color: inherit;
+  background-color: rgba(215, 157, 157, 0.02);
 }
+/* .footers {
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2) inset;
+  text-align: center;
+  text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.2);
+  color: rgba(0, 0, 0, 0.4);
+  background-color: rgb(168, 168, 168);
+  margin: 0;
+  padding: 10px;
+} */
 #slidemenu_content {
   height: 100%;
 }

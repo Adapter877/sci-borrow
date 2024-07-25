@@ -3618,7 +3618,7 @@ th[scope="rowgroup"],
   vertical-align: middle;
 }
 .table_nav select {
-  max-width: 10rem;
+  
 }
 .table_nav > div > fieldset:not(.search) {
   background-color: inherit;
