@@ -9,22 +9,18 @@ return array (
   array (
     0 => 'สมาชิก',
     1 => 'ผู้ดูแลระบบ',
-    2 => 'ช่างซ่อม',
-    3 => 'ผู้รับผิดชอบ',
   ),
   'color_status' => 
   array (
     0 => '#259B24',
     1 => '#FF0000',
-    2 => '#0E0EDA',
-    3 => '#827717',
   ),
   'default_icon' => 'icon-exchange',
   'inventory_w' => 600,
   'borrow_no' => '%04d',
   'borrow_prefix' => 'B%Y%M-',
   'password_key' => '66a070413282b',
-  'reversion' => 1721790662,
+  'reversion' => 1721897060,
   'stored_img_type' => '.jpg',
   'login_message' => '',
   'login_message_style' => 'hidden',

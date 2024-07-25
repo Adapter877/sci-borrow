@@ -134,10 +134,10 @@ class View extends \Gcms\View
                     'class' => 'nowrap'
                 ),
                 'category_id' => array(
-                    'class' => 'center nowrap'
+                    'class' => 'left nowrap'
                 ),
                 'type_id' => array(
-                    'class' => 'center nowrap'
+                    'class' => 'left nowrap'
                 ),
                 'model_id' => array(
                     'class' => 'center nowrap'
