@@ -16,7 +16,7 @@ jobs:
       packages: write
       id-token: write
     outputs:
-      full_image_tag: ${{ steps.meta.outputs.full_image_tag }}
+      full_image_tag: ${{ steps.set_full_image_tag.outputs.full_image_tag }}
 
     steps:
       - name: Checkout repository
@@ -60,9 +60,8 @@ jobs:
 
       - name: Set full image tag
         id: set_full_image_tag
-        run: echo "FULL_IMAGE_TAG=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}" >> $GITHUB_ENV
-
-
+        run: echo "full_image_tag=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}" >> $GITHUB_ENV
+             echo "::set-output name=full_image_tag::${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}"
   deploy:
     needs: build
     runs-on: ubuntu-20.04
