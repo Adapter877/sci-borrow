@@ -56,7 +56,7 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
-            type=sha,prefix={{branch}}-,format=short  # สร้างแท็กโดยใช้ SHA ของ commit ปัจจุบัน
+            type=sha,prefix={{branch}}-,format=full  # สร้างแท็กโดยใช้ SHA ของ commit ปัจจุบัน
 
       - name: Debug image tag
         run: |
