@@ -6,7 +6,8 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
+  ORIGINAL_IMAGE_NAME: ${{ github.repository }}
+  IMAGE_NAME: ${{ github.repository }}  # Keep original name for later reference
 
 jobs:
   build:
@@ -41,12 +42,11 @@ jobs:
 
       - name: Extract Docker metadata
         id: meta
-        uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
+        uses: docker/metadata-action@v4
         with:
-          images: ${{ env.REGISTRY }}/$(echo ${{ env.IMAGE_NAME }} | tr '[:upper:]' '[:lower:]')
+          images: ${{ env.REGISTRY }}/$(echo ${{ env.ORIGINAL_IMAGE_NAME }} | tr '[:upper:]' '[:lower:]')
           tags: |
             type=sha,prefix={{branch}}-,format=short  # สร้างแท็กโดยใช้ SHA ของ commit ปัจจุบัน
-
   deploy:
     needs: build
     runs-on: ubuntu-20.04
@@ -68,7 +68,7 @@ jobs:
         if: ${{ contains(github.event.release.tag_name, '-beta') }}
         env:
           REGISTRY: ghcr.io
-          IMAGE_NAME: $(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]')
+          IMAGE_NAME: $(echo ${{ env.ORIGINAL_IMAGE_NAME }} | tr '[:upper:]' '[:lower:]')
           IMAGE_TAG: ${{ needs.build.outputs.image_tag }}
         run: |
           echo "Updating image tag to: $IMAGE_TAG"
