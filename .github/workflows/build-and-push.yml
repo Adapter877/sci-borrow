@@ -10,44 +10,69 @@ env:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
     outputs:
-      image_tag: ${{ steps.build.outputs.image_tag }}
+      image_tags: ${{ steps.meta.outputs.tags }}
+      
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-      - name: Build and push Docker image
-        id: build
-        run: |
-          IMAGE_TAG=$(date +%Y%m%d%H%M%S)
-          echo "IMAGE_TAG=${IMAGE_TAG}" >> $GITHUB_ENV
-          docker build -t ghcr.io/adapter877/sci-borrow:${IMAGE_TAG} .
-          echo "::set-output name=image_tag::${IMAGE_TAG}"
-          docker push ghcr.io/adapter877/sci-borrow:${IMAGE_TAG}
+      - name: Install cosign
+        if: github.event_name != 'pull_request'
+        uses: sigstore/cosign-installer@v3.1.1
+        with:
+          cosign-release: 'v2.1.1'
 
-  update-deployment:
-    runs-on: ubuntu-latest
+      - name: Setup Docker buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Log into registry ${{ env.REGISTRY }}
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract Docker metadata
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=sha,prefix={{branch}}-,format=short
+      
+
+  deploy:
     needs: build
-    if: ${{ contains(github.event.release.tag_name, '-beta') }}
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+    runs-on: ubuntu-20.04
 
-      - name: Install yq
+    steps:
+      - name: Setup Git
         run: |
-          sudo apt-get update
-          sudo apt-get install -y yq
+          git config --global user.name "Github Actions"
+          git config --global user.email "actions@github.com"
+
+      - name: Checkout gitops repository
+        uses: actions/checkout@v3
+        with:
+          repository: Adapter877/sci-borrow
+          ref: main
+          token: ${{ secrets.GH_PAT }}
 
       - name: Update image tag for UAT
+        if: ${{ contains(github.event.release.tag_name, '-beta') }}
         run: |
-          IMAGE_TAG=${{ needs.build.outputs.image_tag }}
-          if [ -z "$IMAGE_TAG" ]; then
-            echo "Image tag is empty"
-            exit 1
-          fi
-          echo "Updating image tag to: ${IMAGE_TAG}"
-          yq eval '.spec.template.spec.containers[0].image = "'"${IMAGE_TAG}"'"' -i deployment/deployment.yaml
-          git add deployment/deployment.yaml
-          git commit -m "Set 'web' image tag to '${IMAGE_TAG}'"
-          git push
+            echo "Updating image tag to: ${{ needs.build.outputs.image_tags }}"
+            yq eval '.spec.template.spec.containers[0].image = ${{ needs.build.outputs.image_tags }}"' -i deployment/deployment.yaml
+            git add deployment/deployment.yaml
+            git commit -m "Set 'web' image tag to '${{ needs.build.outputs.image_tags }}'"
+            git push
+
+      - name: Check deployment file content
+        run: cat deployment/deployment.yaml
