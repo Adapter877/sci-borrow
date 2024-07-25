@@ -16,20 +16,20 @@ jobs:
       packages: write
       id-token: write
     outputs:
-      image_tags: ${{ steps.meta.outputs.tags }}
-      
+      image_tags: ${{ steps.meta.outputs.tags }}  # ส่งออกค่า image_tags จากขั้นตอน Extract Docker metadata
+
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v3  # เช็คเอาท์ repository ปัจจุบัน
 
       - name: Install cosign
         if: github.event_name != 'pull_request'
         uses: sigstore/cosign-installer@v3.1.1
         with:
-          cosign-release: 'v2.1.1'
+          cosign-release: 'v2.1.1'  # ติดตั้ง cosign เวอร์ชัน 2.1.1
 
       - name: Setup Docker buildx
-        uses: docker/setup-buildx-action@v2
+        uses: docker/setup-buildx-action@v2  # ตั้งค่า Docker buildx
 
       - name: Log into registry ${{ env.REGISTRY }}
         if: github.event_name != 'pull_request'
@@ -37,7 +37,7 @@ jobs:
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          password: ${{ secrets.GITHUB_TOKEN }}  # ล็อกอินเข้าสู่ Docker registry
 
       - name: Extract Docker metadata
         id: meta
@@ -45,8 +45,8 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
-            type=sha,prefix={{branch}}-,format=short
-      
+            type=sha,prefix={{branch}}-,format=short  # สร้างแท็กโดยใช้ SHA ของ commit ปัจจุบัน
+
 
   deploy:
     needs: build
@@ -56,23 +56,23 @@ jobs:
       - name: Setup Git
         run: |
           git config --global user.name "Github Actions"
-          git config --global user.email "actions@github.com"
+          git config --global user.email "actions@github.com"  # ตั้งค่า Git
 
       - name: Checkout gitops repository
         uses: actions/checkout@v3
         with:
           repository: Adapter877/sci-borrow
           ref: main
-          token: ${{ secrets.GH_PAT }}
+          token: ${{ secrets.GH_PAT }}  # เช็คเอาท์ repository สำหรับ gitops
 
-      - name: Update image tag for UAT
+      - name: Update image tag 
         if: ${{ contains(github.event.release.tag_name, '-beta') }}
         run: |
-            echo "Updating image tag to: ${{ needs.build.outputs.image_tags }}"
-            yq eval '.spec.template.spec.containers[0].image = "${{ needs.build.outputs.image_tags }}"' -i deployment/deployment.yaml
-            git add deployment/deployment.yaml
-            git commit -m "Set 'web' image tag to '${{ needs.build.outputs.image_tags }}'"
-            git push
+          echo "Updating image tag to: ${{ needs.build.outputs.image_tags }}"
+          yq eval '.spec.template.spec.containers[0].image = "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.build.outputs.image_tags }}"' -i deployment/deployment.yaml
+          git add deployment/deployment.yaml
+          git commit -m "Set 'web' image tag to '${{ needs.build.outputs.image_tags }}'"
+          git push  # อัปเดต image tag ในไฟล์ deployment สำหรับ UAT
 
       - name: Check deployment file content
-        run: cat deployment/deployment.yaml
+        run: cat deployment/deployment.yaml  # ตรวจสอบเนื้อหาของไฟล์ deployment หลังจากอัปเดต
