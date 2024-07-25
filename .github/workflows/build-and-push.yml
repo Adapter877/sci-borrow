@@ -16,7 +16,7 @@ jobs:
       packages: write
       id-token: write
     outputs:
-      image_tag: ${{ steps.meta.outputs.tags }}
+      full_image_tag: ${{ steps.meta.outputs.full_image_tag }}
 
     steps:
       - name: Checkout repository
@@ -56,7 +56,12 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
-            type=sha,prefix={{branch}}-format=long  # สร้างแท็กโดยใช้ SHA ของ commit ปัจจุบัน
+            type=sha,prefix={{branch}}-,format=long  # สร้างแท็กโดยใช้ SHA แบบเต็มของ commit ปัจจุบัน
+
+      - name: Set full image tag
+        id: set_full_image_tag
+        run: echo "FULL_IMAGE_TAG=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}" >> $GITHUB_ENV
+
 
   deploy:
     needs: build
@@ -79,15 +84,15 @@ jobs:
         if: ${{ contains(github.event.release.tag_name, '-beta') }}
         env:
           REGISTRY: ghcr.io
-          IMAGE_TAG: ${{ needs.build.outputs.image_tag }}
+          ORIGINAL_IMAGE_NAME: ${{ github.repository }}
+          FULL_IMAGE_TAG: ${{ needs.build.outputs.full_image_tag }}
         run: |
-          echo "Updating image tag to: $IMAGE_TAG"
-          IMAGE_NAME=$(echo ${{ env.ORIGINAL_IMAGE_NAME }} | tr '[:upper:]' '[:lower:]')
-          IMAGE_TAG_CLEANED=$(echo $IMAGE_TAG | sed 's/^.*-//')
-          echo "Cleaned image tag: $IMAGE_TAG_CLEANED"
-          yq eval ".spec.template.spec.containers[0].image = \"$REGISTRY/$IMAGE_NAME:$IMAGE_TAG_CLEANED\"" -i deployment/deployment.yaml
+          echo "Updating image tag to: $FULL_IMAGE_TAG"
+          IMAGE_NAME=$(echo $ORIGINAL_IMAGE_NAME | tr '[:upper:]' '[:lower:]')
+          echo "Cleaned image tag: $FULL_IMAGE_TAG"
+          yq eval ".spec.template.spec.containers[0].image = \"$FULL_IMAGE_TAG\"" -i deployment/deployment.yaml
           git add deployment/deployment.yaml
-          git commit -m "Set 'web' image tag to '${IMAGE_TAG_CLEANED}'"
+          git commit -m "Set 'web' image tag to '${FULL_IMAGE_TAG}'"
           git push  # อัปเดต image tag ในไฟล์ deployment สำหรับ UAT
 
       - name: Check deployment file content
