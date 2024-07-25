@@ -47,6 +47,12 @@ jobs:
           tags: |
             type=sha,prefix={{branch}}-,format=short  # สร้างแท็กโดยใช้ SHA ของ commit ปัจจุบัน
 
+      - name: Debug image tag
+        run: |
+            echo "Image tag: ${{ steps.meta.outputs.tags }}"
+            echo "Registry: ${{ env.REGISTRY }}"
+            echo "Image name: ${{ env.IMAGE_NAME }}"
+
 
   deploy:
     needs: build
