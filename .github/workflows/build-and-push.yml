@@ -16,7 +16,7 @@ jobs:
       packages: write
       id-token: write
     outputs:
-      image_tag: ${{ steps.meta.outputs.tags }}  # เปลี่ยนจาก image_tags เป็น image_tag เพื่อลดความสับสน
+      image_tag: ${{ steps.meta.outputs.tags }}  # ส่งออกค่า image_tag จากขั้นตอน Extract Docker metadata
 
     steps:
       - name: Checkout repository
@@ -69,7 +69,7 @@ jobs:
         if: ${{ contains(github.event.release.tag_name, '-beta') }}
         run: |
           echo "Updating image tag to: ${{ needs.build.outputs.image_tag }}"
-          yq eval '.spec.template.spec.containers[0].image = "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.build.outputs.image_tag }}"' -i deployment/deployment.yaml
+          yq eval '.spec.template.spec.containers[0].image = strenv(REGISTRY) + "/" + strenv(IMAGE_NAME) + ":" + strenv(image_tag)' -i deployment/deployment.yaml
           git add deployment/deployment.yaml
           git commit -m "Set 'web' image tag to '${{ needs.build.outputs.image_tag }}'"
           git push  # อัปเดต image tag ในไฟล์ deployment สำหรับ UAT
