@@ -16,7 +16,7 @@ jobs:
       packages: write
       id-token: write
     outputs:
-      image_tag: ${{ steps.meta.outputs.tags }}  # ส่งออกค่า image_tag จากขั้นตอน Extract Docker metadata
+      image_tag: ${{ steps.meta.outputs.tags }}
 
     steps:
       - name: Checkout repository
@@ -46,8 +46,6 @@ jobs:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
             type=sha,prefix={{branch}}-,format=short  # สร้างแท็กโดยใช้ SHA ของ commit ปัจจุบัน
-
-
   deploy:
     needs: build
     runs-on: ubuntu-20.04
@@ -67,12 +65,17 @@ jobs:
 
       - name: Update image tag for UAT
         if: ${{ contains(github.event.release.tag_name, '-beta') }}
+        env:
+          REGISTRY: ghcr.io
+          IMAGE_NAME: ${{ github.repository }}
+          IMAGE_TAG: ${{ needs.build.outputs.image_tag }}
         run: |
-          echo "Updating image tag to: ${{ needs.build.outputs.image_tag }}"
-          image_tag=$(echo ${{ needs.build.outputs.image_tag }} | sed 's/:-/-/')
-          yq eval '.spec.template.spec.containers[0].image = strenv(REGISTRY) + "/" + strenv(IMAGE_NAME) + ":" + strenv(image_tag)' -i deployment/deployment.yaml
+          echo "Updating image tag to: $IMAGE_TAG"
+          IMAGE_TAG_CLEANED=$(echo $IMAGE_TAG | sed 's/^.*-//')
+          echo "Cleaned image tag: $IMAGE_TAG_CLEANED"
+          yq eval ".spec.template.spec.containers[0].image = \"$REGISTRY/$IMAGE_NAME:$IMAGE_TAG_CLEANED\"" -i deployment/deployment.yaml
           git add deployment/deployment.yaml
-          git commit -m "Set 'web' image tag to '${image_tag}'"
+          git commit -m "Set 'web' image tag to '${IMAGE_TAG_CLEANED}'"
           git push  # อัปเดต image tag ในไฟล์ deployment สำหรับ UAT
 
       - name: Check deployment file content
