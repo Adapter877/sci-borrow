@@ -68,7 +68,7 @@ jobs:
         if: ${{ contains(github.event.release.tag_name, '-beta') }}
         env:
           REGISTRY: ghcr.io
-          IMAGE_NAME: $(echo ${{ env.ORIGINAL_IMAGE_NAME }} | tr '[:upper:]' '[:lower:]')
+          IMAGE_NAME: $(echo ${{ env.ORIGINAL_IMAGE_NAME }}')
           IMAGE_TAG: ${{ needs.build.outputs.image_tag }}
         run: |
           echo "Updating image tag to: $IMAGE_TAG"
