@@ -57,6 +57,7 @@ jobs:
         with:
           context: .
           push: true
+          build-args: LATEST_TAG=${{ env.LATEST_TAG }}
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }},${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.LATEST_TAG }}  # ใช้ tag ล่าสุดที่ดึงมา
 
       - name: Set full image tag
