@@ -43,18 +43,19 @@ jobs:
         id: set_image_name
         run: echo "IMAGE_NAME=$(echo ${{ env.ORIGINAL_IMAGE_NAME }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
 
-      - name: Get GitHub release tag
-        id: get-tag
+      - name: Get latest tag from GitHub API
+        id: get-latest-tag
         run: |
-          TAG=$(echo "${GITHUB_REF#refs/tags/}")
-          echo "TAG=${TAG}" >> $GITHUB_ENV
+          LATEST_TAG=$(curl -s -H "Authorization: token ${{ secrets.GH_PAT }}" https://api.github.com/repos/${{ github.repository }}/tags | jq -r '.[0].name')
+          echo "LATEST_TAG=${LATEST_TAG}" >> $GITHUB_ENV  # ตั้งค่า tag ล่าสุดเป็น environment variable
+
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v2
         with:
           context: .
           push: true
-          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }},${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.TAG }}
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }},${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.LATEST_TAG }}  # ใช้ tag ล่าสุดที่ดึงมา
       - name: Set full image tag
         id: set_full_image_tag
         run: |
