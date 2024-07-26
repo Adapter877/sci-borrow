@@ -1,7 +1,7 @@
 <?php
 /* config.php */
 return array(
-    'version' => '6.1.0',
+    'version' =>  .$_ENV["version"]  ,
     'web_title' => 'E-Borrow',
     'web_description' => 'ระบบ ยืม-คืน พัสดุ ออนไลน์',
     'timezone' => 'Asia/Bangkok',
