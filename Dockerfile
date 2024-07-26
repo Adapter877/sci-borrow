@@ -14,9 +14,9 @@ RUN a2enmod rewrite
 # Set the working directory
 WORKDIR /var/www/html
 # Define build-time argument for LATEST_TAG
-ARG LATEST_TAG
+ARG LATEST_TAG=
 # Set environment variable LATEST_TAG from build-time argument
-ENV LATEST_TAG=${LATEST_TAG}
+ENV LATEST_TAG=${env.LATEST_TAG}
 # Copy the current directory contents into the container at /var/www/html
 COPY . /var/www/html
 # Set permissions for the web directory

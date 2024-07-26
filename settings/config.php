@@ -1,6 +1,6 @@
 <?php
 /* config.php */
-$ip = getenv('PHP_VERSION');
+$ip = getenv('LATEST_TAG');
 return array (
   'version' => $ip,
   'web_title' => 'ระบบยืม-คืนวัสดุครุภัณฑ์ประจำห้องปฏิบัติการหลักสูตร ฟิสิกส์ เคมี ชีววิทยา',
