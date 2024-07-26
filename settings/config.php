@@ -1,7 +1,8 @@
 <?php
 /* config.php */
+$ip = getenv('VERSION');
 return array (
-  'version' => '6.1.0',
+  'version' => getenv('VERSION'),
   'web_title' => 'ระบบยืม-คืนวัสดุครุภัณฑ์ประจำห้องปฏิบัติการหลักสูตร ฟิสิกส์ เคมี ชีววิทยา',
   'web_description' => 'ระบบยืม-คืนวัสดุครุภัณฑ์ประจำห้องปฏิบัติการหลักสูตร ฟิสิกส์ เคมี ชีววิทยา',
   'timezone' => 'Asia/Bangkok',
