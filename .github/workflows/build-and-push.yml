@@ -46,7 +46,7 @@ jobs:
       - name: Get latest tag from GitHub API
         id: get-latest-tag
         run: |
-          LATEST_TAG=$(curl -s -H "Authorization: token ${{ secrets.GH_PAT }}" https://api.github.com/repos/Adapter877/sci-borrow/tags | jq -r '.[0].name')
+          LATEST_TAG=$(curl -s -H "Authorization: token ${{ secrets.GH_PAT }}" https://github.com/Adapter877/sci-borrow/tags | jq -r '.[0].name')
           echo "LATEST_TAG=${LATEST_TAG}" >> $GITHUB_ENV
       
       - name: Print latest tag for debugging
