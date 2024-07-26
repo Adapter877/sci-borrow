@@ -173,7 +173,111 @@ services:
 
 ```
 
+# .github/workflows/build-and-push.yml
+``` yaml
+name: Release
 
+on:
+  release:
+    types: [published]
+
+env:
+  REGISTRY: ghcr.io
+  ORIGINAL_IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+    outputs:
+      full_image_tag: ${{ steps.set_full_image_tag.outputs.full_image_tag }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3  # เช็คเอาท์ repository ปัจจุบัน
+
+      - name: Install cosign
+        if: github.event_name != 'pull_request'
+        uses: sigstore/cosign-installer@v3.1.1
+        with:
+          cosign-release: 'v2.1.1'  # ติดตั้ง cosign เวอร์ชัน 2.1.1
+
+      - name: Setup Docker buildx
+        uses: docker/setup-buildx-action@v2  # ตั้งค่า Docker buildx
+
+      - name: Log into registry
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}  # ล็อกอินเข้าสู่ Docker registry
+
+      - name: Set lowercase image name
+        id: set_image_name
+        run: echo "IMAGE_NAME=$(echo ${{ env.ORIGINAL_IMAGE_NAME }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+      
+      - name: Get latest tag from GitHub API
+        id: get-latest-tag
+        run: |
+          LATEST_TAG=$(curl -s -H "Authorization: token ${{ secrets.GH_PAT }}" https://api.github.com/repos/Adapter877/sci-borrow/tags | jq -r '.[0].name')
+          echo "LATEST_TAG=${LATEST_TAG}" >> $GITHUB_ENV
+      
+      - name: Print latest tag for debugging
+        run: echo "LATEST_TAG=${{ env.LATEST_TAG }}"
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          push: true
+          build-args: LATEST_TAG=${{ env.LATEST_TAG }}
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }},${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.LATEST_TAG }}  # ใช้ tag ล่าสุดที่ดึงมา
+
+      - name: Set full image tag
+        id: set_full_image_tag
+        run: |
+          CLEANED_SHA=$(echo $GITHUB_SHA | sed 's/sha-//')
+          FULL_IMAGE_TAG=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${CLEANED_SHA}
+          echo "::set-output name=full_image_tag::$FULL_IMAGE_TAG"
+        env:
+          GITHUB_SHA: ${{ github.sha }}
+
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-20.04
+
+    steps:
+      - name: Setup Git
+        run: |
+          git config --global user.name "Github Actions"
+          git config --global user.email "actions@github.com"  # ตั้งค่า Git
+
+      - name: Checkout gitops repository
+        uses: actions/checkout@v3
+        with:
+          repository: Adapter877/sci-borrow
+          ref: main
+          token: ${{ secrets.GH_PAT }}  # เช็คเอาท์ repository สำหรับ gitops
+
+      - name: Update image tag for UAT
+        if: ${{ contains(github.event.release.tag_name, '-beta') }}
+        env:
+          FULL_IMAGE_TAG: ${{ needs.build.outputs.full_image_tag }}
+        run: |
+          echo "Updating image tag to: $FULL_IMAGE_TAG"
+          yq eval ".spec.template.spec.containers[0].image = \"$FULL_IMAGE_TAG\"" -i deployment/deployment.yaml
+          git add deployment/deployment.yaml
+          git commit -m "Set 'web' image tag to '${FULL_IMAGE_TAG}'"
+          git push  # อัปเดต image tag ในไฟล์ deployment สำหรับ UAT
+
+      - name: Check deployment file content
+        run: cat deployment/deployment.yaml  # ตรวจสอบเนื้อหาของไฟล์ deployment หลังจากอัปเดต
+```
 
 ### ฟีเจอร์หลัก
 
@@ -188,6 +292,12 @@ services:
 * **รองรับการยืมบางส่วน:** ยืมพัสดุบางส่วนจากใบเบิกที่ได้รับอนุมัติ
 * **จัดการผู้ใช้:** เพิ่ม ลบ แก้ไข ข้อมูลผู้ใช้ และกำหนดสิทธิ์การเข้าถึงระบบ
 * **ตั้งค่าระบบ:** กำหนดค่าทั่วไป เช่น ข้อมูลติดต่อ โลโก้ และธีมของระบบ
+
+
+
+
+
+
 
 ### ดาวน์โหลด
 
