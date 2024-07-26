@@ -99,3 +99,11 @@ jobs:
 
       - name: Check deployment file content
         run: cat deployment/deployment.yaml
+      - name: Print environment variables
+        run: |
+          echo "GITHUB_REF=${GITHUB_REF}"
+          echo "TAG=${{ env.TAG }}"
+          echo "REGISTRY=${{ env.REGISTRY }}"
+          echo "IMAGE_NAME=${{ env.IMAGE_NAME }}"
+          echo "FULL_IMAGE_TAG=${{ needs.build.outputs.full_image_tag }}"
+        
