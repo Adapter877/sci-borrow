@@ -42,12 +42,13 @@ jobs:
       - name: Set lowercase image name
         id: set_image_name
         run: echo "IMAGE_NAME=$(echo ${{ env.ORIGINAL_IMAGE_NAME }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
-
+      
       - name: Get latest tag from GitHub API
         id: get-latest-tag
         run: |
-          LATEST_TAG=$(curl -s -H "Authorization: token ${{ secrets.GH_PAT }}" https://api.github.com/repos/${{ github.repository }}/tags | jq -r '.[0].name')
-          echo "LATEST_TAG=${LATEST_TAG}" >> $GITHUB_ENV  # ตั้งค่า tag ล่าสุดเป็น environment variable
+          LATEST_TAG=$(curl -s -H "Authorization: token ${{ secrets.GH_PAT }}" https://api.github.com/repos/Adapter877/sci-borrow/tags | jq -r '.[0].name')
+          echo "LATEST_TAG=${LATEST_TAG}" >> $GITHUB_ENV
+      
 
 
       - name: Build and push Docker image
@@ -56,6 +57,7 @@ jobs:
           context: .
           push: true
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }},${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.LATEST_TAG }}  # ใช้ tag ล่าสุดที่ดึงมา
+
       - name: Set full image tag
         id: set_full_image_tag
         run: |
