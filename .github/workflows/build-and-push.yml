@@ -70,37 +70,32 @@ jobs:
           GITHUB_SHA: ${{ github.sha }}
 
   deploy:
-    needs: build
-    runs-on: self-hosted
-
-    steps:
-      - name: Setup Git
-        run: |
-          git config --global user.name "Github Actions"
-          git config --global user.email "actions@github.com"
-
-      - name: Checkout gitops repository
-        uses: actions/checkout@v3
-        with:
-          repository: Adapter877/sci-borrow
-          ref: main
-          token: ${{ secrets.GH_PAT }}
-
-      - name: Install yq
-        run: |
-          sudo curl -sL https://github.com/mikefarah/yq/releases/download/v4.17.1/yq_linux_amd64 -o /usr/bin/yq
-          sudo chmod +x /usr/bin/yq
-      
-      - name: Update image tag for UAT
-        if: ${{ contains(github.event.release.tag_name, '-beta') }}
-        env:
-          FULL_IMAGE_TAG: ${{ needs.build.outputs.full_image_tag }}
-        run: |
-          echo "Updating image tag to: $FULL_IMAGE_TAG"
-          yq eval ".spec.template.spec.containers[0].image = \"$FULL_IMAGE_TAG\"" -i deployment/deployment.yaml
-          git add deployment/deployment.yaml
-          git commit -m "Set 'web' image tag to '${FULL_IMAGE_TAG}'"
-          git push
-
-      - name: Check deployment file content
-        run: cat deployment/deployment.yaml
+      needs: build
+      runs-on: ubuntu-20.04
+  
+      steps:
+        - name: Setup Git
+          run: |
+            git config --global user.name "Github Actions"
+            git config --global user.email "actions@github.com"  # ตั้งค่า Git
+  
+        - name: Checkout gitops repository
+          uses: actions/checkout@v3
+          with:
+            repository: Adapter877/sci-borrow
+            ref: main
+            token: ${{ secrets.GH_PAT }}  # เช็คเอาท์ repository สำหรับ gitops
+  
+        - name: Update image tag for UAT
+          if: ${{ contains(github.event.release.tag_name, '-beta') }}
+          env:
+            FULL_IMAGE_TAG: ${{ needs.build.outputs.full_image_tag }}
+          run: |
+            echo "Updating image tag to: $FULL_IMAGE_TAG"
+            yq eval ".spec.template.spec.containers[0].image = \"$FULL_IMAGE_TAG\"" -i deployment/deployment.yaml
+            git add deployment/deployment.yaml
+            git commit -m "Set 'web' image tag to '${FULL_IMAGE_TAG}'"
+            git push  # อัปเดต image tag ในไฟล์ deployment สำหรับ UAT
+  
+        - name: Check deployment file content
+          run: cat deployment/deployment.yaml  # ตรวจสอบเนื้อหาของไฟล์ deployment หลังจากอัปเดต
