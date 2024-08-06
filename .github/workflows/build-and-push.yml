@@ -10,7 +10,7 @@ env:
 
 jobs:
   build:
-    runs-on: [self-hosted]  # ใช้ self-hosted runner
+    runs-on: self-hosted
     permissions:
       contents: read
       packages: write
@@ -42,13 +42,13 @@ jobs:
       - name: Set lowercase image name
         id: set_image_name
         run: echo "IMAGE_NAME=$(echo ${{ env.ORIGINAL_IMAGE_NAME }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
-
+      
       - name: Get latest tag from GitHub API
         id: get-latest-tag
         run: |
-          LATEST_TAG=$(curl -s -H "Authorization: token ${{ secrets.GH_PAT }}" https://api.github.com/repos/Adapter877/sci-borrow/tags | jq -r '.[0].name')
+          LATEST_TAG=$(curl -s -H "Authorization: token ${{ secrets.GH_PAT }}" https://api.github.com/repos/${{ github.repository }}/tags | jq -r '.[0].name')
           echo "LATEST_TAG=${LATEST_TAG}" >> $GITHUB_ENV
-
+      
       - name: Print latest tag for debugging
         run: echo "LATEST_TAG=${{ env.LATEST_TAG }}"
 
@@ -71,7 +71,7 @@ jobs:
 
   deploy:
     needs: build
-    runs-on: [self-hosted]
+    runs-on: self-hosted
 
     steps:
       - name: Setup Git
@@ -88,13 +88,9 @@ jobs:
 
       - name: Install yq
         run: |
-          curl -sL https://github.com/mikefarah/yq/releases/download/v4.17.1/yq_linux_amd64 -o /usr/bin/yq
-          chmod +x /usr/bin/yq
-
-      - name: Verify yq installation
-        run: |
-          yq --version
-
+          sudo curl -sL https://github.com/mikefarah/yq/releases/download/v4.17.1/yq_linux_amd64 -o /usr/bin/yq
+          sudo chmod +x /usr/bin/yq
+      
       - name: Update image tag for UAT
         if: ${{ contains(github.event.release.tag_name, '-beta') }}
         env:
