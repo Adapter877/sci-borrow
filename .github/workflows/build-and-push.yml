@@ -24,8 +24,8 @@ jobs:
           curl -X POST https://notify-api.line.me/api/notify \
           -H 'Authorization: Bearer ${{ secrets.LINE_NOTIFY_TOKEN }}' \
           -d 'message=🚀 *เริ่มการทำงานของแอคชั่น!* 🎉
-          🔹 *ที่เก็บข้อมูล:* ${{ env.REPO_NAME }} 
-          🔹 *ผู้ใช้:* ${{ env.USER_NAME }} 
+          🔹 *ที่เก็บข้อมูล:* ${{ github.repository }} 
+          🔹 *ผู้ใช้:* ${{ github.actor }} 
           👍 *ติดตามผลการทำงานต่อไป...*'
 
       - name: Checkout repository
@@ -83,12 +83,11 @@ jobs:
           curl -X POST https://notify-api.line.me/api/notify \
           -H 'Authorization: Bearer ${{ secrets.LINE_NOTIFY_TOKEN }}' \
           -d 'message=🚀 *แอคชั่นเสร็จสมบูรณ์!* 🎉
-          🔹 *ที่เก็บข้อมูล:* ${{ env.REPO_NAME }}
-          🔹 *ผู้ใช้:* ${{ env.USER_NAME }}
+          🔹 *ที่เก็บข้อมูล:* ${{ github.repository }}
+          🔹 *ผู้ใช้:* ${{ github.actor }}
           🔹 *อิมเมจ:* ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          🔹 *แท็ก:* ${{ steps.meta.outputs.tags }}
+          🔹 *แท็ก:* ${{ needs.build.outputs.full_image_tag }}
           👍 *ขอบคุณที่ให้ความสนใจ!*'
-
   deploy:
     needs: build
     runs-on: ubuntu-20.04
