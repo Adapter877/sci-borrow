@@ -24,6 +24,7 @@ jobs:
           curl -X POST https://notify-api.line.me/api/notify \
           -H 'Authorization: Bearer ${{ secrets.LINE_NOTIFY_TOKEN }}' \
           -d 'message=🚀 *เริ่มการทำงานของแอคชั่น!* 🎉
+          🔹 *Runs on:* ${{ env.BUILD_RUNS_ON }}
           🔹 *ที่เก็บข้อมูล:* ${{ github.repository }} 
           🔹 *ผู้ใช้:* ${{ github.actor }} 
           👍 *ติดตามผลการทำงานต่อไป...*'
@@ -83,6 +84,7 @@ jobs:
           curl -X POST https://notify-api.line.me/api/notify \
           -H 'Authorization: Bearer ${{ secrets.LINE_NOTIFY_TOKEN }}' \
           -d 'message=🚀 *แอคชั่นเสร็จสมบูรณ์!* 🎉
+          🔹 *Runs on:* ${{ env.BUILD_RUNS_ON }}
           🔹 *ที่เก็บข้อมูล:* ${{ github.repository }}
           🔹 *ผู้ใช้:* ${{ github.actor }}
           🔹 *อิมเมจ:* ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
