@@ -7,6 +7,8 @@ on:
 env:
   REGISTRY: ghcr.io
   ORIGINAL_IMAGE_NAME: ${{ github.repository }}
+  BUILD_RUNS_ON: self-hosted
+  DEPLOY_RUNS_ON: ubuntu-20.04
 
 jobs:
   build:
@@ -28,6 +30,15 @@ jobs:
           🔹 *ที่เก็บข้อมูล:* ${{ github.repository }} 
           🔹 *ผู้ใช้:* ${{ github.actor }} 
           👍 *ติดตามผลการทำงานต่อไป...*'
+
+      - name: Send Discord notification (start)
+        run: |
+          curl -X POST ${{ secrets.DISCORD_WEBHOOK_URL }} \
+          -H "Content-Type: application/json" \
+          -d '{"content": "🚀 *เริ่มการทำงานของแอคชั่น!* 🎉
+          🔹 *Runs on:* ${{ env.BUILD_RUNS_ON }}\n🔹 *ที่เก็บข้อมูล:* ${{ github.repository }}
+          🔹 *ผู้ใช้:* ${{ github.actor }}
+          👍 *ติดตามผลการทำงานต่อไป...*"}'
 
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -90,11 +101,27 @@ jobs:
           🔹 *อิมเมจ:* ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           🔹 *แท็ก:* ${{ needs.build.outputs.full_image_tag }}
           👍 *ขอบคุณที่ให้ความสนใจ!*'
+
+      - name: Send Discord notification (end)
+        run: |
+          curl -X POST ${{ secrets.DISCORD_WEBHOOK_URL }} \
+          -H "Content-Type: application/json" \
+          -d '{"content": "🚀 *แอคชั่นเสร็จสมบูรณ์!* 🎉
+          🔹 *Runs on:* ${{ env.BUILD_RUNS_ON }}
+          🔹 *ที่เก็บข้อมูล:* ${{ github.repository }}\n🔹 *ผู้ใช้:* ${{ github.actor }}
+          🔹 *อิมเมจ:* ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          🔹 *แท็ก:* ${{ needs.build.outputs.full_image_tag }}
+          👍 *ขอบคุณที่ให้ความสนใจ!*"}'
+
   deploy:
     needs: build
     runs-on: ubuntu-20.04
 
     steps:
+      - name: Set job environment
+        id: set_job_env
+        run: echo "DEPLOY_RUNS_ON=ubuntu-20.04" >> $GITHUB_ENV
+
       - name: Setup Git
         run: |
           git config --global user.name "Github Actions"
@@ -120,3 +147,12 @@ jobs:
 
       - name: Check deployment file content
         run: cat deployment/deployment.yaml
+
+      - name: Send Discord notification (deploy end)
+        run: |
+          curl -X POST ${{ secrets.DISCORD_WEBHOOK_URL }} \
+          -H "Content-Type: application/json" \
+          -d '{"content": "🚀 *การ deploy เสร็จสมบูรณ์!* 🎉
+          🔹 *ที่เก็บข้อมูล:* ${{ github.repository }}
+          🔹 *ผู้ใช้:* ${{ github.actor }}\n🔹 *Runs on:* ${{ env.DEPLOY_RUNS_ON }}
+          👍 *ขอบคุณที่ให้ความสนใจ!*"}'
