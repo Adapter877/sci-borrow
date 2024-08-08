@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: sample-app
-          image: ghcr.io/adapter877/sci-borrow:1b481c2dbf6973273e8cddeecd2019785757221c
+          image: ghcr.io/adapter877/sci-borrow:06b148a9ab12ece2ca8f0235d052058bcff3a160
           ports:
             - containerPort: 80
           resources:
