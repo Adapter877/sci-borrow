@@ -30,6 +30,8 @@ jobs:
           🔹 *ที่เก็บข้อมูล:* ${{ github.repository }} 
           🔹 *ผู้ใช้:* ${{ github.actor }} 
           👍 *ติดตามผลการทำงานต่อไป...*'
+          👍 *___________________________________________...*'
+          
 
       - name: Send Discord notification (start)
         run: |
@@ -98,6 +100,7 @@ jobs:
           🔹 *อิมเมจ:* ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           🔹 *แท็ก:* ${{ needs.build.outputs.full_image_tag }}
           👍 *ขอบคุณที่ให้ความสนใจ!*'
+          👍 *___________________________________________...*'
 
       - name: Send Discord notification (end)
         run: |
