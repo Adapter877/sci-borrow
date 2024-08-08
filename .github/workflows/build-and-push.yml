@@ -29,13 +29,14 @@ jobs:
           🔹 *Runs on:* ${{ env.BUILD_RUNS_ON }}
           🔹 *ที่เก็บข้อมูล:* ${{ github.repository }} 
           🔹 *ผู้ใช้:* ${{ github.actor }} 
-          👍 *ติดตามผลการทำงานต่อไป...*'
+          👍 *ติดตามผลการทำงานต่อไป...*
+          -----------------------------'
 
       - name: Send Discord notification (start)
         run: |
           curl -X POST ${{ secrets.DISCORD_WEBHOOK_URL }} \
           -H "Content-Type: application/json" \
-          -d '{"content": "🚀 *เริ่มการทำงานของแอคชั่น!* 🎉\n🔹 *Runs on:* ${{ env.BUILD_RUNS_ON }}\n🔹 *ที่เก็บข้อมูล:* ${{ github.repository }}\n🔹 *ผู้ใช้:* ${{ github.actor }}\n👍 *ติดตามผลการทำงานต่อไป...*"}'
+          -d '{"content": "🚀 *เริ่มการทำงานของแอคชั่น!* 🎉\n🔹 *Runs on:* ${{ env.BUILD_RUNS_ON }}\n🔹 *ที่เก็บข้อมูล:* ${{ github.repository }}\n🔹 *ผู้ใช้:* ${{ github.actor }}\n👍 *ติดตามผลการทำงานต่อไป...*\n -----------------------------"}'
 
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -103,7 +104,7 @@ jobs:
         run: |
           curl -X POST ${{ secrets.DISCORD_WEBHOOK_URL }} \
           -H "Content-Type: application/json" \
-          -d '{"content": "🚀 *แอคชั่นเสร็จสมบูรณ์!* 🎉\n🔹 *Runs on:* ${{ env.BUILD_RUNS_ON }}\n🔹 *ที่เก็บข้อมูล:* ${{ github.repository }}\n🔹 *ผู้ใช้:* ${{ github.actor }}\n🔹 *อิมเมจ:* ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}\n🔹 *แท็ก:* ${{ needs.build.outputs.full_image_tag }}\n👍 *ขอบคุณที่ให้ความสนใจ!*"}'
+          -d '{"content": "🚀 *แอคชั่นเสร็จสมบูรณ์!* 🎉\n🔹 *Runs on:* ${{ env.BUILD_RUNS_ON }}\n🔹 *ที่เก็บข้อมูล:* ${{ github.repository }}\n🔹 *ผู้ใช้:* ${{ github.actor }}\n🔹 *อิมเมจ:* ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}\n🔹 *แท็ก:* ${{ needs.build.outputs.full_image_tag }}\n👍 *ขอบคุณที่ให้ความสนใจ!*\n -----------------------------"}'
 
   deploy:
     needs: build
