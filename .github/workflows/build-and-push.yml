@@ -30,8 +30,6 @@ jobs:
           🔹 *ที่เก็บข้อมูล:* ${{ github.repository }} 
           🔹 *ผู้ใช้:* ${{ github.actor }} 
           👍 *ติดตามผลการทำงานต่อไป...*'
-          👍 *___________________________________________...*'
-          
 
       - name: Send Discord notification (start)
         run: |
@@ -100,7 +98,6 @@ jobs:
           🔹 *อิมเมจ:* ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           🔹 *แท็ก:* ${{ needs.build.outputs.full_image_tag }}
           👍 *ขอบคุณที่ให้ความสนใจ!*'
-          👍 *___________________________________________...*'
 
       - name: Send Discord notification (end)
         run: |
@@ -147,4 +144,4 @@ jobs:
         run: |
           curl -X POST ${{ secrets.DISCORD_WEBHOOK_URL }} \
           -H "Content-Type: application/json" \
-          -d '{"content": "🚀 *การ deploy เสร็จสมบูรณ์!* 🎉\n🔹 *ที่เก็บข้อมูล:* ${{ github.repository }}\n🔹 *ผู้ใช้:* ${{ github.actor }}\n🔹 *Runs on:* ${{ env.DEPLOY_RUNS_ON }}\n👍 *ขอบคุณที่ให้ความสนใจ!*"}'
+          -d '{"content": "\n🚀 *การ deploy เสร็จสมบูรณ์!* 🎉\n🔹 *ที่เก็บข้อมูล:* ${{ github.repository }}\n🔹 *ผู้ใช้:* ${{ github.actor }}\n🔹 *Runs on:* ${{ env.DEPLOY_RUNS_ON }}\n👍 *ขอบคุณที่ให้ความสนใจ!*"}'
