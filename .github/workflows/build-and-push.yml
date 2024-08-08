@@ -21,6 +21,10 @@ jobs:
       full_image_tag: ${{ steps.set_full_image_tag.outputs.full_image_tag }}
 
     steps:
+      - name: Record start time
+        id: start_time
+        run: echo "START_TIME=$(date +%s)" >> $GITHUB_ENV
+
       - name: Send LINE notification (start)
         run: |
           curl -X POST https://notify-api.line.me/api/notify \
@@ -29,14 +33,13 @@ jobs:
           🔹 *Runs on:* ${{ env.BUILD_RUNS_ON }}
           🔹 *ที่เก็บข้อมูล:* ${{ github.repository }} 
           🔹 *ผู้ใช้:* ${{ github.actor }} 
-          👍 *ติดตามผลการทำงานต่อไป...*
-          -----------------------------'
+          👍 *ติดตามผลการทำงานต่อไป...*'
 
       - name: Send Discord notification (start)
         run: |
           curl -X POST ${{ secrets.DISCORD_WEBHOOK_URL }} \
           -H "Content-Type: application/json" \
-          -d '{"content": "🚀 *เริ่มการทำงานของแอคชั่น!* 🎉\n🔹 *Runs on:* ${{ env.BUILD_RUNS_ON }}\n🔹 *ที่เก็บข้อมูล:* ${{ github.repository }}\n🔹 *ผู้ใช้:* ${{ github.actor }}\n👍 *ติดตามผลการทำงานต่อไป...*\n -----------------------------"}'
+          -d '{"content": "🚀 *เริ่มการทำงานของแอคชั่น!* 🎉\n🔹 *Runs on:* ${{ env.BUILD_RUNS_ON }}\n🔹 *ที่เก็บข้อมูล:* ${{ github.repository }}\n🔹 *ผู้ใช้:* ${{ github.actor }}\n👍 *ติดตามผลการทำงานต่อไป...*"}'
 
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -88,6 +91,13 @@ jobs:
         env:
           GITHUB_SHA: ${{ github.sha }}
 
+      - name: Record end time and calculate duration
+        id: end_time
+        run: |
+          END_TIME=$(date +%s)
+          DURATION=$((END_TIME - START_TIME))
+          echo "DURATION=$DURATION seconds" >> $GITHUB_ENV
+
       - name: Send LINE notification (end)
         run: |
           curl -X POST https://notify-api.line.me/api/notify \
@@ -98,13 +108,14 @@ jobs:
           🔹 *ผู้ใช้:* ${{ github.actor }}
           🔹 *อิมเมจ:* ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           🔹 *แท็ก:* ${{ needs.build.outputs.full_image_tag }}
+          🔹 *เวลา:* ${{ env.DURATION }} seconds
           👍 *ขอบคุณที่ให้ความสนใจ!*'
 
       - name: Send Discord notification (end)
         run: |
           curl -X POST ${{ secrets.DISCORD_WEBHOOK_URL }} \
           -H "Content-Type: application/json" \
-          -d '{"content": "🚀 *แอคชั่นเสร็จสมบูรณ์!* 🎉\n🔹 *Runs on:* ${{ env.BUILD_RUNS_ON }}\n🔹 *ที่เก็บข้อมูล:* ${{ github.repository }}\n🔹 *ผู้ใช้:* ${{ github.actor }}\n🔹 *อิมเมจ:* ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}\n🔹 *แท็ก:* ${{ needs.build.outputs.full_image_tag }}\n👍 *ขอบคุณที่ให้ความสนใจ!*\n -----------------------------"}'
+          -d '{"content": "🚀 *แอคชั่นเสร็จสมบูรณ์!* 🎉\n🔹 *Runs on:* ${{ env.BUILD_RUNS_ON }}\n🔹 *ที่เก็บข้อมูล:* ${{ github.repository }}\n🔹 *ผู้ใช้:* ${{ github.actor }}\n🔹 *อิมเมจ:* ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}\n🔹 *แท็ก:* ${{ needs.build.outputs.full_image_tag }}\n🔹 *เวลา:* ${{ env.DURATION }} seconds\n👍 *ขอบคุณที่ให้ความสนใจ!*"}'
 
   deploy:
     needs: build
@@ -145,4 +156,4 @@ jobs:
         run: |
           curl -X POST ${{ secrets.DISCORD_WEBHOOK_URL }} \
           -H "Content-Type: application/json" \
-          -d '{"content": "\n🚀 *การ deploy เสร็จสมบูรณ์!* 🎉\n🔹 *ที่เก็บข้อมูล:* ${{ github.repository }}\n🔹 *ผู้ใช้:* ${{ github.actor }}\n🔹 *Runs on:* ${{ env.DEPLOY_RUNS_ON }}\n👍 *ขอบคุณที่ให้ความสนใจ!*"}'
+          -d '{"content": "🚀 *การ deploy เสร็จสมบูรณ์!* 🎉\n🔹 *ที่เก็บข้อมูล:* ${{ github.repository }}\n🔹 *ผู้ใช้:* ${{ github.actor }}\n🔹 *Runs on:* ${{ env.DEPLOY_RUNS_ON }}\n👍 *ขอบคุณที่ให้ความสนใจ!*"}'
