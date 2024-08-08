@@ -35,10 +35,7 @@ jobs:
         run: |
           curl -X POST ${{ secrets.DISCORD_WEBHOOK_URL }} \
           -H "Content-Type: application/json" \
-          -d '{"content": "🚀 *เริ่มการทำงานของแอคชั่น!* 🎉
-          🔹 *Runs on:* ${{ env.BUILD_RUNS_ON }}\n🔹 *ที่เก็บข้อมูล:* ${{ github.repository }}
-          🔹 *ผู้ใช้:* ${{ github.actor }}
-          👍 *ติดตามผลการทำงานต่อไป...*"}'
+          -d '{"content": "🚀 *เริ่มการทำงานของแอคชั่น!* 🎉\n🔹 *Runs on:* ${{ env.BUILD_RUNS_ON }}\n🔹 *ที่เก็บข้อมูล:* ${{ github.repository }}\n🔹 *ผู้ใช้:* ${{ github.actor }}\n👍 *ติดตามผลการทำงานต่อไป...*"}'
 
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -65,7 +62,7 @@ jobs:
         run: echo "IMAGE_NAME=$(echo ${{ env.ORIGINAL_IMAGE_NAME }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
       
       - name: Get latest tag from GitHub API
-        id: get-latest-tag
+        id: get_latest_tag
         run: |
           LATEST_TAG=$(curl -s -H "Authorization: token ${{ secrets.GH_PAT }}" https://api.github.com/repos/${{ github.repository }}/tags | jq -r '.[0].name')
           echo "LATEST_TAG=${LATEST_TAG}" >> $GITHUB_ENV
@@ -106,12 +103,7 @@ jobs:
         run: |
           curl -X POST ${{ secrets.DISCORD_WEBHOOK_URL }} \
           -H "Content-Type: application/json" \
-          -d '{"content": "🚀 *แอคชั่นเสร็จสมบูรณ์!* 🎉
-          🔹 *Runs on:* ${{ env.BUILD_RUNS_ON }}
-          🔹 *ที่เก็บข้อมูล:* ${{ github.repository }}\n🔹 *ผู้ใช้:* ${{ github.actor }}
-          🔹 *อิมเมจ:* ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          🔹 *แท็ก:* ${{ needs.build.outputs.full_image_tag }}
-          👍 *ขอบคุณที่ให้ความสนใจ!*"}'
+          -d '{"content": "🚀 *แอคชั่นเสร็จสมบูรณ์!* 🎉\n🔹 *Runs on:* ${{ env.BUILD_RUNS_ON }}\n🔹 *ที่เก็บข้อมูล:* ${{ github.repository }}\n🔹 *ผู้ใช้:* ${{ github.actor }}\n🔹 *อิมเมจ:* ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}\n🔹 *แท็ก:* ${{ needs.build.outputs.full_image_tag }}\n👍 *ขอบคุณที่ให้ความสนใจ!*"}'
 
   deploy:
     needs: build
@@ -152,7 +144,4 @@ jobs:
         run: |
           curl -X POST ${{ secrets.DISCORD_WEBHOOK_URL }} \
           -H "Content-Type: application/json" \
-          -d '{"content": "🚀 *การ deploy เสร็จสมบูรณ์!* 🎉
-          🔹 *ที่เก็บข้อมูล:* ${{ github.repository }}
-          🔹 *ผู้ใช้:* ${{ github.actor }}\n🔹 *Runs on:* ${{ env.DEPLOY_RUNS_ON }}
-          👍 *ขอบคุณที่ให้ความสนใจ!*"}'
+          -d '{"content": "🚀 *การ deploy เสร็จสมบูรณ์!* 🎉\n🔹 *ที่เก็บข้อมูล:* ${{ github.repository }}\n🔹 *ผู้ใช้:* ${{ github.actor }}\n🔹 *Runs on:* ${{ env.DEPLOY_RUNS_ON }}\n👍 *ขอบคุณที่ให้ความสนใจ!*"}'
