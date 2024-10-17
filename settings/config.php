@@ -3,8 +3,8 @@
 $ip = getenv('LATEST_TAG');
 return array (
   'version' => $ip,
-  'web_title' => 'ระบบยืม-คืนวัสดุครุภัณฑ์ประจำห้องปฏิบัติการหลักสูตร ฟิสิกส์ เคมี ชีววิทยา Sak_tec 13 Sep 08:48',
-  'web_description' => 'ระบบยืม-คืนวัสดุครุภัณฑ์ประจำห้องปฏิบัติการหลักสูตร ฟิสิกส์ เคมี ชีววิทยา Sak_tec 13 Sep 08:48',
+  'web_title' => 'ระบบยืม-คืนวัสดุครุภัณฑ์ประจำห้องปฏิบัติการหลักสูตร ฟิสิกส์ เคมี ชีววิทยา Sak_tec Thursday 17 October 2024 08:48',
+  'web_description' => 'ระบบยืม-คืนวัสดุครุภัณฑ์ประจำห้องปฏิบัติการหลักสูตร ฟิสิกส์ เคมี ชีววิทยา Sak_tec Thursday 17 October 2024 08:48',
   'timezone' => 'Asia/Bangkok',
   'member_status' => 
   array (
