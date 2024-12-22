@@ -1,0 +1,1 @@
+<?php exit?>[{"id":1,"topic":"\u0e2b\u0e25\u0e2d\u0e14\u0e17\u0e14\u0e25\u0e2d\u0e07","product_no":"STA-001","unit":"\u0e2d\u0e31\u0e19","stock":100}]
