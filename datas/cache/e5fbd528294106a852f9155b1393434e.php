@@ -1,0 +1,1 @@
+<?php exit?>[{"id":8,"category_id":"1","model_id":1,"type_id":1,"topic":"\u0e2b\u0e25\u0e2d\u0e14\u0e2b\u0e22\u0e14","inuse":1,"count_stock":1,"product_no":"STA-008","unit":"\u0e2d\u0e31\u0e19","stock":50,"detail":"\u0e2b\u0e25\u0e2d\u0e14\u0e2b\u0e22\u0e14"}]
