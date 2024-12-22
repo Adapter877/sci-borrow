@@ -4,6 +4,21 @@ services:
   web:
     build: .
     ports:
-      - '80:80'
+      - "8080:80"
     volumes:
       - ./:/var/www/html
+    depends_on:
+      - mysql
+
+  mysql:
+    image: mysql:latest
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: borrow
+      MYSQL_USER: sak
+      MYSQL_PASSWORD: Sak#2566
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./mysql-data:/var/lib/mysql
