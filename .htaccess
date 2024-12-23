@@ -28,3 +28,5 @@
     Header set Cache-Control "max-age=604800, public"
   </filesMatch>
 </IfModule>
+# Set environment variable
+SetEnv VERSION "1.0.0"
