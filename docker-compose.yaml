@@ -1,0 +1,13 @@
+version: "3.8"
+
+services:
+  web:
+    build:
+      context: .  # ใช้ Dockerfile ที่อยู่ใน directory เดียวกัน
+      dockerfile: Dockerfile  # กำหนดไฟล์ Dockerfile ที่ใช้
+    container_name: apache_php_container
+    ports:
+      - "80:80"  # เชื่อมต่อพอร์ต 80 ของ container กับพอร์ต 80 ของเครื่อง
+    volumes:
+      - ./:/var/www/html  # เชื่อมโยงไฟล์ในโฟลเดอร์ html กับ container
+    restart: always
