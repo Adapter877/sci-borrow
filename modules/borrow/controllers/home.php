@@ -36,8 +36,15 @@ class Controller extends \Gcms\Controller
             \Index\Home\Controller::renderCard($card, 'icon-exchange', $login['name'], number_format($items->pending), ' '.Language::get('BORROW_STATUS', null, 0), 'index.php?module=borrow-setup&amp;status=0');
             \Index\Home\Controller::renderCard($card, 'icon-valid', $login['name'], number_format($items->confirmed), ' '.Language::get('BORROW_STATUS', null, 2), 'index.php?module=borrow-setup&amp;status=2');
             \Index\Home\Controller::renderCard($card, 'icon-warning', $login['name'], number_format($items->returned), ' {LNG_Un-Returned items}', 'index.php?module=borrow-setup&amp;status=2&amp;due=1');
-            \Index\Home\Controller::renderCard($card, 'icon-exchange', $login['name'], number_format($items->pending), ' '.Language::get('ส่งมอบ', null, 0), 'index.php?module=borrow-setup&amp;status=5');
-            if (isset($items->allpending)) {
+            \Index\Home\Controller::renderCard(
+                $card, 
+                'icon-valid', 
+                $login['name'], 
+                number_format($items->delivered),  // เปลี่ยนจาก pending เป็น delivered
+                ' '.Language::get('ส่งมอบ', null, 0),  // ป้ายสถานะส่งมอบ
+                'index.php?module=borrow-setup&amp;status=5' // ลิงก์ที่ตรงกับสถานะส่งมอบ
+            );
+                        if (isset($items->allpending)) {
                 \Index\Home\Controller::renderCard($card, 'icon-exchange', '{LNG_Can be approve}', number_format($items->allpending), ' {LNG_Waiting list}', 'index.php?module=borrow-report&amp;status=0');
             }
         }

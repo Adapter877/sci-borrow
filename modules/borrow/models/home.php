@@ -14,7 +14,7 @@ use Gcms\Login;
 use Kotchasan\Database\Sql;
 
 /**
- * โมเดลสำหรับอ่านข้อมูลแสดงในหน้า  Home
+ * โมเดลสำหรับอ่านข้อมูลแสดงในหน้า Home
  *
  * @author Goragod Wiriya <admin@goragod.com>
  *
@@ -61,17 +61,38 @@ class Model extends \Kotchasan\Model
                 [Sql::DATEDIFF('W.return_date', date('Y-m-d')), '>', 0],
                 Sql::ISNULL('W.return_date')
             ], 'OR');
+        // ส่งมอบ (status = 5)
+        $q3 = static::createQuery()
+            ->select(Sql::COUNT())
+            ->from('borrow W')
+            ->join('borrow_items S', 'INNER', ['S.borrow_id', 'W.id'])
+            ->where([
+                ['W.borrower_id', $login['id']],
+                ['S.status', 5]
+            ]);
+
         if (Login::checkPermission($login, 'can_approve_borrow')) {
             // รายการรอตรวจสอบทั้งหมด
-            $q3 = static::createQuery()
+            $q4 = static::createQuery()
                 ->select(Sql::COUNT())
                 ->from('borrow W')
                 ->join('borrow_items S', 'INNER', ['S.borrow_id', 'W.id'])
                 ->where(['S.status', 0]);
 
-            return static::createQuery()->cacheOn()->first([$q0, 'pending'], [$q1, 'returned'], [$q2, 'confirmed'], [$q3, 'allpending']);
+            return static::createQuery()->cacheOn()->first([
+                $q0, 'pending'],
+                [$q1, 'returned'],
+                [$q2, 'confirmed'],
+                [$q3, 'delivered'],   // เพิ่มการดึงจำนวน "ส่งมอบ"
+                [$q4, 'allpending']
+            );
         } else {
-            return static::createQuery()->cacheOn()->first([$q0, 'pending'], [$q1, 'returned'], [$q2, 'confirmed']);
+            return static::createQuery()->cacheOn()->first([
+                $q0, 'pending'],
+                [$q1, 'returned'],
+                [$q2, 'confirmed'],
+                [$q3, 'delivered']   // เพิ่มการดึงจำนวน "ส่งมอบ"
+            );
         }
     }
 }
