@@ -1,13 +1,24 @@
-version: "3.8"
+version: '3.7'
 
 services:
   web:
-    build:
-      context: .  # ใช้ Dockerfile ที่อยู่ใน directory เดียวกัน
-      dockerfile: Dockerfile  # กำหนดไฟล์ Dockerfile ที่ใช้
-    container_name: apache_php_container
+    build: .
     ports:
-      - "80:80"  # เชื่อมต่อพอร์ต 80 ของ container กับพอร์ต 80 ของเครื่อง
+      - "8080:80"
     volumes:
-      - ./:/var/www/html  # เชื่อมโยงไฟล์ในโฟลเดอร์ html กับ container
+      - ./:/var/www/html
+    depends_on:
+      - mysql
+
+  mysql:
+    image: mysql:latest
     restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: borrow
+      MYSQL_USER: sak
+      MYSQL_PASSWORD: ***REDACTED***
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./mysql-data:/var/lib/mysql

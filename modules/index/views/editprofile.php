@@ -210,6 +210,14 @@ class View extends \Gcms\View
             'text' => $user['province'],
             'value' => $user['provinceID']
         ]);
+        $groups->add('text', array(
+            'id' => 'register_major',
+            'labelClass' => 'g-input icon-profile',
+            'itemClass' => 'width35',
+            'label' => 'สาขาวิชา',
+            'maxlength' => 32,
+            'value' => $user['major']
+        ));
         // zipcode
         $groups->add('number', [
             'id' => 'register_zipcode',

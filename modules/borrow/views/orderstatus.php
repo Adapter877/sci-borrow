@@ -1,5 +1,4 @@
 <?php
-
 /**
  * @filesource modules/borrow/views/orderstatus.php
  *
@@ -32,16 +31,17 @@ class View extends \Gcms\View
      */
     public static function render($index, $action)
     {
-        $actions = array(
+        $actions = [
             'delivery' => '{LNG_Delivery}',
+            'return' => '{LNG_Return}',
             'status' => '{LNG_Status update}'
-
-        );
-        $icons = array(
+        ];
+        $icons = [
             'delivery' => 'icon-outbox',
+            'return' => 'icon-inbox',
             'status' => 'icon-star0'
-        );
-        $form = Html::create('form', array(
+        ];
+        $form = Html::create('form', [
             'id' => 'status_frm',
             'class' => 'setup_frm',
             'autocomplete' => 'off',
@@ -49,68 +49,57 @@ class View extends \Gcms\View
             'onsubmit' => 'doFormSubmit',
             'ajax' => true,
             'token' => true
-        ));
-        $form->add('header', array(
-            'innerHTML' => '<h3 class=' . $icons[$action] . '>' . $actions[$action] . '</h3>'
-        ));
+        ]);
+        $form->add('header', [
+            'innerHTML' => '<h3 class='.$icons[$action].'>'.$actions[$action].'</h3>'
+        ]);
         $fieldset = $form->add('fieldset');
-        $fieldset->add('div', array(
+        $fieldset->add('div', [
             'class' => 'item',
             'innerHTML' => $index->topic
-        ));
+        ]);
         if ($action !== 'status') {
             // amount
-            $fieldset->add('text', array(
-                'id' => 'remain',
+            $fieldset->add('number', [
+                'id' => 'amount',
+                'labelClass' => 'g-input icon-number',
                 'itemClass' => 'item',
-                'value' => $index->stock . ' ' . $index->unit,
-                'label' => 'จำนวนคงเหลือ',
-                'readonly' => true
-            ));
+                'label' => '{LNG_Quantity}'
+            ]);
         }
         // status
-        $fieldset->add('select', array(
+        $fieldset->add('select', [
             'id' => 'status',
             'labelClass' => 'g-input icon-star0',
             'itemClass' => 'item',
             'label' => '{LNG_Status}',
             'options' => Language::get('BORROW_STATUS'),
             'value' => $index->status
-        ));
-        if ($action !== 'status') {
-            // amount
-            $fieldset->add('number', array(
-                'id' => 'amount',
-                'labelClass' => 'g-input icon-number',
-                'itemClass' => 'item',
-                'label' => '{LNG_Quantity}'
-            ));
-        }
-
-        $fieldset = $form->add('fieldset', array(
+        ]);
+        $fieldset = $form->add('fieldset', [
             'class' => 'submit right'
-        ));
+        ]);
         // submit
-        $fieldset->add('submit', array(
+        $fieldset->add('submit', [
             'class' => 'button ok large',
             'id' => 'order_submit',
             'value' => '{LNG_Save}'
-        ));
+        ]);
         // borrow_id
-        $fieldset->add('hidden', array(
+        $fieldset->add('hidden', [
             'id' => 'borrow_id',
             'value' => $index->borrow_id
-        ));
+        ]);
         // id
-        $fieldset->add('hidden', array(
+        $fieldset->add('hidden', [
             'id' => 'id',
             'value' => $index->id
-        ));
+        ]);
         // action
-        $fieldset->add('hidden', array(
+        $fieldset->add('hidden', [
             'id' => 'action',
             'value' => $action
-        ));
+        ]);
         // คืนค่า HTML
         return Language::trans($form->render());
     }

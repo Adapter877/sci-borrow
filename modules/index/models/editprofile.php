@@ -86,6 +86,7 @@ class Model extends \Kotchasan\Model
                         'address' => $request->post('register_address')->topic(),
                         'provinceID' => $request->post('register_provinceID')->number(),
                         'province' => $request->post('register_province')->topic(),
+                        'major' => $request->post('register_major')->topic(),
                         'zipcode' => $request->post('register_zipcode')->number(),
                         'country' => $request->post('register_country')->filter('A-Z')
                     ];

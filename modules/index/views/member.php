@@ -92,13 +92,13 @@ class View extends \Gcms\View
                     'text' => '{LNG_With selected}',
                     'options' => [
                         // ส่งแจ้งเตือนอนุมัติการเข้าระบบ
-                        'active_2' => '{LNG_Send login approval notification}',
+                        'active_2' => '{LNG_ส่งการแจ้งเตือนการอนุมัติการเข้าสู่ระบบ}',
                         // ส่งคำขอ ยืนยันสมาชิก
-                        'activate_0' => '{LNG_Send member confirmation message}',
+                        'activate_0' => '{LNG_ส่งข้อความยืนยันการเป็นสมาชิก}',
                         // ส่งคำขอ ขอรหัสผ่านใหม่
-                        'sendpassword' => '{LNG_Send a new password request}',
+                        'sendpassword' => '{LNG_ส่งคำขอรหัสผ่านใหม่}',
                         // ยอมรับคำขอยืนยันสมาชิก
-                        'activate_1' => '{LNG_Accept member verification request}',
+                        'activate_1' => '{LNG_ยอมรับคำขอตรวจสอบสมาชิก}',
                         // สามารถเข้าระบบได้
                         'active_1' => '{LNG_Can login}',
                         // ไม่สามารถเข้าระบบได้
@@ -215,9 +215,9 @@ class View extends \Gcms\View
         }
         $item['create_date'] = Date::format($item['create_date'], 'd M Y');
         if ($item['active'] == 1) {
-            $item['active'] = '<span class="icon-valid notext access" title="{LNG_Can login}"></span>';
+            $item['active'] = '<span class="icon-valid notext access" title="{LNG_Can login}"> สามารถเข้าระบบได้</span>';
         } else {
-            $item['active'] = '<span class="icon-valid notext disabled" title="{LNG_Can&#039;t login}"></span>';
+            $item['active'] = '<span class="icon-valid notext disabled" title="{LNG_Can&#039;t login}"> ไม่สามารถเข้าระบบได้</span>';
         }
         if ($item['activatecode'] != '') {
             $item['activatecode'] = '<span class="icon-verfied notext access" title="{LNG_Membership has not been confirmed yet.}"></span>';

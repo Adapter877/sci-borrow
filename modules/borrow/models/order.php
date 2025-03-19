@@ -34,11 +34,12 @@ class Model extends \Kotchasan\Model
     public static function get($id)
     {
         return static::createQuery()
+        
             ->from('borrow B')
             ->join('user U', 'LEFT', ['U.id', 'B.borrower_id'])
             ->where(['B.id', $id])
-            ->first('B.*', 'U.name borrower');
-    }
+            ->first('B.*', 'U.name AS borrower', 'U.major AS major', 'U.phone AS phone', 'U.id_card AS id_card', 'U.address AS address', 'U.province AS province', 'U.country AS country', 'U.zipcode AS zipcode');
+        }
 
     /**
      * อ่านรายการพัสดุในใบยืม

@@ -55,6 +55,41 @@ class View extends \Gcms\View
             'value' => $index->borrower,
             'autofocus' => true
         ]);
+                $groups = $fieldset->add('groups'); // ย้ายขึ้นมาให้อยู่จุดที่เหมาะสม
+
+        $groups->add('number', array(
+            'id' => 'id_card',
+            'labelClass' => 'g-input icon-number',
+            'itemClass' => 'width20',
+            'label' => 'รหัสประจำตัว',
+            'title' => 'รหัสประจำตัว',
+            'value' => isset($index->id_card) ? $index->id_card : '',
+            'autofocus' => true,
+            'readonly' => true
+        ));
+
+        $groups->add('text', array(
+            'id' => 'major',
+            'labelClass' => 'g-input icon-profile',
+            'itemClass' => 'width20',
+            'label' => 'สาขาวิชา',
+            'title' => 'สาขาวิชา',
+            'value' => isset($index->major) ? $index->major : '',
+            'autofocus' => true,
+            'readonly' => true
+        ));
+
+        $groups->add('number', array(
+            'id' => 'phone',
+            'labelClass' => 'g-input icon-phone',
+            'itemClass' => 'width20',
+            'label' => 'เบอร์ติดต่อ',
+            'title' => 'เบอร์ติดต่อ',
+            'value' => isset($index->phone) ? $index->phone : '',
+            'autofocus' => true,
+            'readonly' => true
+        ));
+
         // borrower_id
         $fieldset->add('hidden', [
             'id' => 'borrower_id',

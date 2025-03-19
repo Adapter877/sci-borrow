@@ -1,1 +1,0 @@
-<?php exit?>[{"id":1,"username":"admin@uru","name":"\u0e41\u0e2d\u0e14\u0e21\u0e34\u0e19","line_uid":null},{"id":2,"username":"demo","name":"\u0e15\u0e31\u0e27\u0e2d\u0e22\u0e48\u0e32\u0e07","line_uid":null}]
