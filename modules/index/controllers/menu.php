@@ -58,7 +58,7 @@ class Controller
             unset($this->menus['settings']);
         }
         // แอดมิน, ไม่ใช่สมาชิกตัวอย่าง
-        if (!Login::notDemoMode(Login::isAdmin())) {
+        if (!Login::notDemoMode(Login::isAdmin() || $login['status'] == 2)) {
             unset($this->menus['member']);
         }
         // ไม่มีเมนู report
@@ -108,7 +108,7 @@ class Controller
                 }
             }
         } else {
-            $menu = ['text' => $text];
+            $menu = array('text' => $text);
             if (!empty($url)) {
                 $menu['url'] = $url;
             }
@@ -153,7 +153,7 @@ class Controller
     public function add($toplvl, $text, $url = null, $submenus = null, $name = null)
     {
         if (isset($this->menus[$toplvl])) {
-            $menu = ['text' => $text];
+            $menu = array('text' => $text);
             if (!empty($url)) {
                 $menu['url'] = $url;
             }

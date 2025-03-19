@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @filesource modules/index/views/member.php
  *
@@ -13,6 +14,8 @@ namespace Index\Member;
 use Kotchasan\DataTable;
 use Kotchasan\Date;
 use Kotchasan\Http\Request;
+use Kotchasan\Login; // หรือ namespace ที่ Login class อยู่
+
 
 /**
  * module=member
@@ -38,38 +41,43 @@ class View extends \Gcms\View
     public function render(Request $request)
     {
         // ค่าที่ส่งมา
-        $params = [
+        $params = array(
             'status' => $request->request('status', -1)->toInt()
-        ];
+        );
         // สถานะสมาชิก
-        $member_status = [-1 => '{LNG_all items}'];
+        $member_status = array(-1 => '{LNG_all items}');
         foreach (self::$cfg->member_status as $key => $value) {
-            $member_status[$key] = '{LNG_'.$value.'}';
+            $member_status[$key] = '{LNG_' . $value . '}';
         }
         $filters = [];
         // หมวดหมู่
-        $this->category = \Index\Category\Model::init(false, true, false);
+        $this->category = \Index\Category\Model::init(false);
         foreach ($this->category->items() as $k => $label) {
             if (!$this->category->isEmpty($k)) {
                 $params[$k] = $request->request($k)->topic();
-                $filters[] = [
+                $filters[] = array(
                     'name' => $k,
                     'text' => $label,
-                    'options' => ['' => '{LNG_all items}'] + $this->category->toSelect($k),
+                    'options' => array('' => '{LNG_all items}') + $this->category->toSelect($k),
                     'value' => $params[$k]
-                ];
+                );
             }
         }
-        $filters[] = [
+        $filters[] = array(
             'name' => 'status',
             'text' => '{LNG_Member status}',
             'options' => $member_status,
             'value' => $params['status']
-        ];
+        );
         // URL สำหรับส่งให้ตาราง
-        $uri = $request->createUriWithGlobals(WEB_URL.'index.php');
+        $uri = $request->createUriWithGlobals(WEB_URL . 'index.php');
         // ตาราง
-        $table = new DataTable([
+        // ตรวจสอบว่าเป็นแอดมินหรือไม่
+        // ตรวจสอบว่าเป็นแอดมินหรือไม่
+        $isAdmin = Login::isAdmin();
+
+        // สร้าง DataTable
+        $table = new DataTable(array(
             /* Uri */
             'uri' => $uri,
             /* Model */
@@ -79,109 +87,103 @@ class View extends \Gcms\View
             /* เรียงลำดับ */
             'sort' => $request->cookie('member_sort', 'id desc')->toString(),
             /* ฟังก์ชั่นจัดรูปแบบการแสดงผลแถวของตาราง */
-            'onRow' => [$this, 'onRow'],
+            'onRow' => array($this, 'onRow'),
             /* คอลัมน์ที่สามารถค้นหาได้ */
-            'searchColumns' => ['name', 'username', 'phone'],
+            'searchColumns' => array('name', 'username', 'phone'),
             /* ตั้งค่าการกระทำของของตัวเลือกต่างๆ ด้านล่างตาราง ซึ่งจะใช้ร่วมกับการขีดถูกเลือกแถว */
             'action' => 'index.php/index/model/member/action',
             'actionCallback' => 'dataTableActionCallback',
-            'actions' => [
-                [
+            'actions' => array(
+                array(
                     'id' => 'action',
                     'class' => 'ok',
                     'text' => '{LNG_With selected}',
-                    'options' => [
-                        // ส่งแจ้งเตือนอนุมัติการเข้าระบบ
-                        'active_2' => '{LNG_ส่งการแจ้งเตือนการอนุมัติการเข้าสู่ระบบ}',
-                        // ส่งคำขอ ยืนยันสมาชิก
-                        'activate_0' => '{LNG_ส่งข้อความยืนยันการเป็นสมาชิก}',
-                        // ส่งคำขอ ขอรหัสผ่านใหม่
-                        'sendpassword' => '{LNG_ส่งคำขอรหัสผ่านใหม่}',
-                        // ยอมรับคำขอยืนยันสมาชิก
-                        'activate_1' => '{LNG_ยอมรับคำขอตรวจสอบสมาชิก}',
-                        // สามารถเข้าระบบได้
+                    'options' => array(
+                        'active_2' => '{LNG_Send login authorization email}',
+                        'activate_0' => '{LNG_Send member confirmation email}',
+                        'activate_1' => '{LNG_Email address verification}',
+                        'sendpassword' => '{LNG_Get new password}',
                         'active_1' => '{LNG_Can login}',
-                        // ไม่สามารถเข้าระบบได้
                         'active_0' => '{LNG_Can&#039;t login}',
-                        // ลบ
                         'delete' => '{LNG_Delete}'
-                    ]
-                ]
-            ],
+                    )
+                )
+            ),
             /* ตัวเลือกด้านบนของตาราง ใช้จำกัดผลลัพท์การ query */
             'filters' => $filters,
             /* ส่วนหัวของตาราง และการเรียงลำดับ (thead) */
-            'headers' => [
-                'id' => [
-                    'text' => '',
-                    'sort' => 'id'
-                ],
-                'username' => [
-                    'text' => self::usernameLabel()
-                ],
-                'name' => [
+            'headers' => array(
+                'id' => array(
+                    'text' => ''
+                ),
+                'username' => array(
+                    'text' => '{LNG_Email}/{LNG_Username}'
+                ),
+                'name' => array(
                     'text' => '{LNG_Name}',
                     'sort' => 'name'
-                ],
-                'active' => [
-                    'text' => '',
+                ),
+                'active' => array(
+                    'text' => 'การอนุญาตเข้าระบบ',
                     'class' => 'center notext',
                     'sort' => 'active'
-                ],
-                'activatecode' => [
+                ),
+                'activatecode' => array(
                     'text' => ''
-                ],
-                'social' => [
+                ),
+                'social' => array(
                     'text' => ''
-                ],
-                'phone' => [
+                ),
+                'phone' => array(
                     'text' => '{LNG_Phone}'
-                ],
-                'create_date' => [
+                ),
+                'create_date' => array(
                     'text' => '{LNG_Created}',
                     'class' => 'center'
-                ],
-                'status' => [
+                ),
+                'status' => array(
                     'text' => '{LNG_Member status}',
                     'class' => 'center'
-                ]
-            ],
+                )
+            ),
             /* รูปแบบการแสดงผลของคอลัมน์ (tbody) */
-            'cols' => [
-                'name' => [
+            'cols' => array(
+                'name' => array(
                     'class' => 'nowrap'
-                ],
-                'active' => [
+                ),
+                'active' => array(
                     'class' => 'center'
-                ],
-                'activatecode' => [
+                ),
+                'activatecode' => array(
                     'class' => 'center'
-                ],
-                'social' => [
+                ),
+                'social' => array(
                     'class' => 'center'
-                ],
-                'create_date' => [
+                ),
+                'create_date' => array(
                     'class' => 'center nowrap'
-                ],
-                'status' => [
+                ),
+                'status' => array(
                     'class' => 'center'
-                ]
-            ],
+                )
+            ),
             /* ปุ่มแสดงในแต่ละแถว */
-            'buttons' => [
-                [
+            'buttons' => $isAdmin ? array(
+                array(
                     'class' => 'icon-edit button green',
-                    'href' => $uri->createBackUri(['module' => 'editprofile', 'id' => ':id']),
+                    'href' => $uri->createBackUri(array('module' => 'editprofile', 'id' => ':id')),
                     'text' => '{LNG_Edit}'
-                ]
-            ],
-            /* ปุ่มเพิม */
-            'addNew' => [
+                )
+            ) : array(), // หากไม่ใช่แอดมิน ไม่แสดงปุ่ม Edit
+            /* ปุ่มเพิ่ม */
+            'addNew' => $isAdmin ? array(
                 'class' => 'float_button icon-register',
-                'href' => $uri->createBackUri(['module' => 'register', 'id' => 0]),
+                'href' => $uri->createBackUri(array('module' => 'register', 'id' => 0)),
                 'title' => '{LNG_Register}'
-            ]
-        ]);
+            ) : array() // หากไม่ใช่แอดมิน ไม่แสดงปุ่ม Register
+        ));
+
+
         // save cookie
         setcookie('member_perPage', $table->perPage, time() + 2592000, '/', HOST, HTTPS, true);
         setcookie('member_sort', $table->sort, time() + 2592000, '/', HOST, HTTPS, true);
@@ -215,12 +217,12 @@ class View extends \Gcms\View
         }
         $item['create_date'] = Date::format($item['create_date'], 'd M Y');
         if ($item['active'] == 1) {
-            $item['active'] = '<span class="icon-valid notext access" title="{LNG_Can login}"> สามารถเข้าระบบได้</span>';
+            $item['active'] = '<span class="icon-valid notext access " title="{LNG_Can login}">สามารถเข้าระบบได้</span>';
         } else {
-            $item['active'] = '<span class="icon-valid notext disabled" title="{LNG_Can&#039;t login}"> ไม่สามารถเข้าระบบได้</span>';
+            $item['active'] = '<span class="icon-valid notext disabled" title="{LNG_Can&#039;t login}">ไม่สามารถเข้าระบบได้</span>';
         }
         if ($item['activatecode'] != '') {
-            $item['activatecode'] = '<span class="icon-verfied notext access" title="{LNG_Membership has not been confirmed yet.}"></span>';
+            $item['activatecode'] = '<span class="icon-verfied notext access" title="{LNG_Email was not verified}">ยังไม่ได้ยืนยันอีเมล</span>';
         }
         if ($item['social'] == 1) {
             // Facebook
@@ -234,20 +236,20 @@ class View extends \Gcms\View
         } else {
             $item['social'] = '';
         }
-        $item['status'] = isset(self::$cfg->member_status[$item['status']]) ? '<span class=status'.$item['status'].'>{LNG_'.self::$cfg->member_status[$item['status']].'}</span>' : '';
+        $item['status'] = isset(self::$cfg->member_status[$item['status']]) ? '<span class=status' . $item['status'] . '>{LNG_' . self::$cfg->member_status[$item['status']] . '}</span>' : '';
         $item['phone'] = self::showPhone($item['phone']);
-        if (is_file(ROOT_PATH.DATA_FOLDER.'avatar/'.$item['id'].self::$cfg->stored_img_type)) {
-            $avatar = WEB_URL.DATA_FOLDER.'avatar/'.$item['id'].self::$cfg->stored_img_type;
-            $avatar = '<img class=user_icon src="'.$avatar.'" alt="{LNG_Avatar}">';
+        if (is_file(ROOT_PATH . DATA_FOLDER . 'avatar/' . $item['id'] . '.jpg')) {
+            $avatar = WEB_URL . DATA_FOLDER . 'avatar/' . $item['id'] . '.jpg';
+            $avatar = '<img class=user_icon src="' . $avatar . '" alt="{LNG_Avatar}">';
         } else {
             $username = empty($item['username']) ? $item['name'] : $item['username'];
             if ($username == '') {
-                $avatar = '<img class=user_icon src="'.WEB_URL.'skin/img/noicon.png" alt="{LNG_Avatar}">';
+                $avatar = '<img class=user_icon src="' . WEB_URL . 'skin/img/noicon.png" alt="{LNG_Avatar}">';
             } else {
-                $avatar = '<span class=user_icon data-letters="'.mb_substr($username, 0, 2).'"></span>';
+                $avatar = '<span class=user_icon data-letters="' . mb_substr($username, 0, 2) . '"></span>';
             }
         }
-        $item['username'] = empty($item['username']) ? '' : '<a id=login_'.$item['id'].' class=icon-signin title="{LNG_Login as} '.$item['name'].'">'.$item['username'].'</a>';
+        $item['username'] = empty($item['username']) ? '' : '<a id=login_' . $item['id'] . ' class=icon-signin title="{LNG_Login as} ' . $item['name'] . '">' . $item['username'] . '</a>';
         $item['id'] = $avatar;
         return $item;
     }

@@ -42,23 +42,23 @@ class Controller extends \Gcms\Controller
             // อ่านข้อมูลสมาชิก
             $user = \Index\Editprofile\Model::get($request->request('id', $login['id'])->toInt());
             // ตัวเอง, แอดมินแก้ไขได้ทุกคน ยกเว้น ID 1
-            if ($user && $user['id'] > 0 && ($login['id'] == $user['id'] || Login::isAdmin())) {
+            if ($user && $user['id'] > 0 && ($login['id'] == $user['id'] || Login::isAdmin() || $login['status'] == 2)) {
                 // แสดงผล
                 $section = Html::create('section');
                 // breadcrumbs
-                $breadcrumbs = $section->add('nav', [
+                $breadcrumbs = $section->add('nav', array(
                     'class' => 'breadcrumbs'
-                ]);
+                ));
                 $ul = $breadcrumbs->add('ul');
                 $ul->appendChild('<li><span class="icon-user">{LNG_Users}</span></li>');
                 $ul->appendChild('<li><a href="{BACKURL?module=member&id=0}">{LNG_Member list}</a></li>');
                 $ul->appendChild('<li><span>{LNG_Edit}</span></li>');
-                $section->add('header', [
+                $section->add('header', array(
                     'innerHTML' => '<h2 class="icon-profile">'.$this->title.'</h2>'
-                ]);
-                $div = $section->add('div', [
+                ));
+                $div = $section->add('div', array(
                     'class' => 'content_bg'
-                ]);
+                ));
                 // แสดงฟอร์ม
                 $div->appendChild(\Index\Editprofile\View::create()->render($request, $user, $login));
                 // คืนค่า HTML
