@@ -43,12 +43,12 @@ class Model extends \Kotchasan\Model
                 $q = static::createQuery()
                     ->select(Sql::GROUP_CONCAT("D.value", $k, ',', true))
                     ->from('user_meta D')
-                    ->where([['D.member_id', 'U.id'], ['D.name', $k]]);
-                $select[] = [$q, $k];
+                    ->where(array(array('D.member_id', 'U.id'), array('D.name', $k)));
+                $select[] = array($q, $k);
             }
             $user = static::createQuery()
                 ->from('user U')
-                ->where(['U.id', $id])
+                ->where(array('U.id', $id))
                 ->toArray()
                 ->first($select);
             if ($user) {
@@ -77,7 +77,7 @@ class Model extends \Kotchasan\Model
             if (Login::notDemoMode($login)) {
                 try {
                     // รับค่าจากการ POST
-                    $save = [
+                    $save = array(
                         'username' => $request->post('register_username')->username(),
                         'phone' => $request->post('register_phone')->number(),
                         'name' => $request->post('register_name')->topic(),
@@ -86,10 +86,12 @@ class Model extends \Kotchasan\Model
                         'address' => $request->post('register_address')->topic(),
                         'provinceID' => $request->post('register_provinceID')->number(),
                         'province' => $request->post('register_province')->topic(),
-                        'major' => $request->post('register_major')->topic(),
                         'zipcode' => $request->post('register_zipcode')->number(),
-                        'country' => $request->post('register_country')->filter('A-Z')
-                    ];
+                        'country' => $request->post('register_country')->filter('A-Z'),
+                        'major' => $request->post('register_major')->topic(),
+                        'p_name' => $request->post('register_p_name')->topic(),
+                        'p_phone' => $request->post('register_p_phone')->number(),
+                    );
                     // ชื่อตาราง
                     $table_user = $this->getTableName('user');
                     // database connection
@@ -138,9 +140,9 @@ class Model extends \Kotchasan\Model
                             } else {
                                 $checking[$k] = $save[$k];
                                 // ตรวจสอบข้อมูลซ้ำ
-                                $search = $db->first($table_user, [$k, $save[$k]]);
+                                $search = $db->first($table_user, array($k, $save[$k]));
                                 if ($search && $search->id != $user['id']) {
-                                    $ret['ret_register_'.$k] = Language::replace('This :name already exist', [':name' => $login_fields[$k]]);
+                                    $ret['ret_register_'.$k] = Language::replace('This :name already exist', array(':name' => $login_fields[$k]));
                                 }
                             }
                         }
@@ -194,24 +196,20 @@ class Model extends \Kotchasan\Model
                             // อัปโหลดไฟล์
                             foreach ($request->getUploadedFiles() as $item => $file) {
                                 // ชื่อไฟล์ที่ต้องการอัปโหลด
-                                if (isset(self::$cfg->member_images[$item])) {
-                                    $ext = $item == 'avatar' ? self::$cfg->stored_img_type : '.png';
-                                    $image = $dir.$item.'/'.$user['id'].$ext;
+                                if ($item == 'avatar') {
                                     if (!File::makeDirectory($dir.$item.'/')) {
                                         // ไดเรคทอรี่ไม่สามารถสร้างได้
                                         $ret['ret_'.$item] = Language::replace('Directory %s cannot be created or is read-only.', DATA_FOLDER.$item.'/');
                                     } elseif ($request->post('delete_'.$item)->toBoolean() == 1) {
                                         // ลบรูปภาพ
+                                        $image = $dir.$item.'/'.$user['id'].'.jpg';
                                         if (is_file($image)) {
                                             @unlink($image);
                                         }
                                     } elseif ($file->hasUploadFile()) {
                                         try {
-                                            if ($ext === self::$cfg->stored_img_type) {
-                                                $file->cropImage(self::$cfg->member_img_typies, $image, self::$cfg->member_img_size, self::$cfg->member_img_size);
-                                            } else {
-                                                $file->moveTo($image);
-                                            }
+                                            $image = $dir.$item.'/'.$user['id'].'.jpg';
+                                            $file->cropImage(self::$cfg->member_img_typies, $image, self::$cfg->member_img_size, self::$cfg->member_img_size);
                                         } catch (\Exception $exc) {
                                             // ไม่สามารถอัปโหลดได้
                                             $ret['ret_'.$item] = Language::get($exc->getMessage());
@@ -234,22 +232,22 @@ class Model extends \Kotchasan\Model
                             // user_meta
                             $table_user_meta = $this->getTableName('user_meta');
                             foreach ($user_categories as $key => $category) {
-                                $db->delete($table_user_meta, [['member_id', $user['id']], ['name', $key]], 0);
+                                $db->delete($table_user_meta, array(array('member_id', $user['id']), array('name', $key)), 0);
                                 if (in_array($key, self::$cfg->categories_multiple)) {
                                     foreach ($category as $item) {
-                                        $db->insert($table_user_meta, [
+                                        $db->insert($table_user_meta, array(
                                             'value' => $item,
                                             'name' => $key,
                                             'member_id' => $user['id']
-                                        ]);
+                                        ));
                                     }
                                     $save[$key] = array_values($category);
                                 } elseif (!empty($category)) {
-                                    $db->insert($table_user_meta, [
+                                    $db->insert($table_user_meta, array(
                                         'value' => $category,
                                         'name' => $key,
                                         'member_id' => $user['id']
-                                    ]);
+                                    ));
                                     $save[$key] = [$category];
                                 }
                             }
@@ -266,7 +264,7 @@ class Model extends \Kotchasan\Model
                                 $ret['location'] = 'reload';
                             } else {
                                 // ไปหน้าเดิม แสดงรายการ
-                                $ret['location'] = $request->getUri()->postBack('index.php', ['module' => 'member', 'id' => null]);
+                                $ret['location'] = $request->getUri()->postBack('index.php', array('module' => 'member', 'id' => null));
                             }
                             // คืนค่า
                             $ret['alert'] = Language::get('Saved successfully');
