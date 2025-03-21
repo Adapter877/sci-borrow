@@ -70,7 +70,7 @@ class Model extends \Kotchasan\Model
                 ['W.borrower_id', $login['id']],
                 ['S.status', 5]
             ]);
-
+        
         if (Login::checkPermission($login, 'can_approve_borrow')) {
             // รายการรอตรวจสอบทั้งหมด
             $q4 = static::createQuery()
@@ -78,13 +78,34 @@ class Model extends \Kotchasan\Model
                 ->from('borrow W')
                 ->join('borrow_items S', 'INNER', ['S.borrow_id', 'W.id'])
                 ->where(['S.status', 0]);
-
+            $q5 = static::createQuery()
+                ->select(Sql::COUNT())
+                ->from('borrow W')
+                ->join('borrow_items S', 'INNER', ['S.borrow_id', 'W.id'])
+                ->where(['S.status', 2]);
+            $q6 = static::createQuery()
+                ->select(Sql::COUNT())
+                ->from('borrow W')
+                ->join('borrow_items S', 'INNER', ['S.borrow_id', 'W.id'])
+                ->where([
+                    ['S.status', 2],  // สถานะต้องเป็น 2
+                    [Sql::DATEDIFF('W.return_date', date('Y-m-d')), '<=', 0]  // ถ้า return_date ครบกำหนด
+                ]);
+            $q7 = static::createQuery()
+                ->select(Sql::COUNT())
+                ->from('user U')
+                ->where(array('U.active', 0));
             return static::createQuery()->cacheOn()->first([
                 $q0, 'pending'],
                 [$q1, 'returned'],
                 [$q2, 'confirmed'],
                 [$q3, 'delivered'],   // เพิ่มการดึงจำนวน "ส่งมอบ"
                 [$q4, 'allpending']
+            ,   [$q5, 'allconfirmed'],
+                [$q6, 'allreturned'],
+                [$q7, 'unactive'],
+
+
             );
         } else {
             return static::createQuery()->cacheOn()->first([

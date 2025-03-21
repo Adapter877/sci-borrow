@@ -33,6 +33,27 @@ class Controller extends \Gcms\Controller
     {
         if ($login) {
             $items = \Borrow\Home\Model::get($login);
+                        if (isset($items->allpending)) {
+                \Index\Home\Controller::renderCard($card, 'icon-exchange',  $login['name'], number_format($items->unactive), 'สมาชิกที่รอการยืนยันสิทธิ์เข้าใช้ระบบ', 'index.php?module=member');
+
+            }
+        }
+
+        if ($login['status'] == 2) { 
+            \Index\Home\Controller::renderCard($card, 'icon-exchange ', '{LNG_Can be approve}', number_format($items->allpending), ' {LNG_Waiting list}', 'index.php?module=borrow-report&amp;status=0');
+
+            \Index\Home\Controller::renderCard(
+                $card, 
+                'icon-valid', 
+                'สามารถอนุมัติส่งมอบ', 
+                number_format($items->allconfirmed),  // ใช้จำนวนที่ส่งมอบ
+                ' '.Language::get('อนุมัติส่งมอบ', null, 0),  // ป้ายสถานะส่งมอบ
+                'index.php?module=borrow-report&status=2' // ลิงก์ที่ตรงกับสถานะส่งมอบ
+            );
+            \Index\Home\Controller::renderCard($card, 'icon-warning text-danger', $login['name'], number_format($items->allreturned), ' {LNG_Un-Returned items}', 'index.php?module=borrow-report&status=2&due=1');
+
+        }
+        if ($login['status'] == 0) {
             \Index\Home\Controller::renderCard($card, 'icon-exchange', $login['name'], number_format($items->pending), ' '.Language::get('BORROW_STATUS', null, 0), 'index.php?module=borrow-setup&amp;status=0');
             \Index\Home\Controller::renderCard($card, 'icon-valid', $login['name'], number_format($items->confirmed), ' '.Language::get('BORROW_STATUS', null, 2), 'index.php?module=borrow-setup&amp;status=2');
             \Index\Home\Controller::renderCard($card, 'icon-warning', $login['name'], number_format($items->returned), ' {LNG_Un-Returned items}', 'index.php?module=borrow-setup&amp;status=2&amp;due=1');
@@ -47,17 +68,8 @@ class Controller extends \Gcms\Controller
                         if (isset($items->allpending)) {
                 \Index\Home\Controller::renderCard($card, 'icon-exchange', '{LNG_Can be approve}', number_format($items->allpending), ' {LNG_Waiting list}', 'index.php?module=borrow-report&amp;status=0');
             }
+
         }
-        if ($login['status'] == 2) { 
-            \Index\Home\Controller::renderCard(
-                $card, 
-                'icon-valid', 
-                'สามารถอนุมัติส่งมอบ', 
-                number_format($items->delivered),  // ใช้จำนวนที่ส่งมอบ
-                ' '.Language::get('อนุมัติส่งมอบ', null, 0),  // ป้ายสถานะส่งมอบ
-                'index.php?module=borrow-report&status=2' // ลิงก์ที่ตรงกับสถานะส่งมอบ
-            );
-        }
-        
+
     }
 }
