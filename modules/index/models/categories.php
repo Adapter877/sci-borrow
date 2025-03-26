@@ -115,7 +115,7 @@ class Model extends \Kotchasan\Model
 
         // ตรวจสอบเซสชัน, โทเค็น และสิทธิ์ของผู้ใช้
         if ($request->initSession() && $request->isSafe() && $login = Login::isMember()) {
-            if (Login::notDemoMode($login) && Login::checkPermission($login, 'can_config')) {
+            if (Login::notDemoMode($login) && Login::checkPermission($login, 'can_config' || 'can_manage_inventory')) {
                 try {
                     // รวบรวมประเภทของหมวดหมู่ที่จะบันทึก
                     $type = $request->post('type')->topic();

@@ -31,7 +31,7 @@ class View extends \Gcms\View
      */
     public function render($index)
     {
-        $form = Html::create('form', [
+        $form = Html::create('form', array(
             'id' => 'order_frm',
             'class' => 'setup_frm',
             'autocomplete' => 'off',
@@ -39,101 +39,162 @@ class View extends \Gcms\View
             'onsubmit' => 'doFormSubmit',
             'ajax' => true,
             'token' => true
-        ]);
-        $fieldset = $form->add('fieldset', [
+        ));
+        $fieldset = $form->add('fieldset', array(
             'title' => '{LNG_Details of} {LNG_Borrower}',
             'titleClass' => 'icon-profile'
-        ]);
+        ));
         // borrower
-        $fieldset->add('text', [
+        $groups = $fieldset->add('groups');
+        $groups->add('text', array(
             'id' => 'borrower',
             'labelClass' => 'g-input icon-customer',
-            'itemClass' => 'item',
+            'itemClass' => 'width20',
             'label' => '{LNG_Borrower}',
-            'placeholder' => Language::replace('Fill some of the :name to find', [':name' => '{LNG_Name}, {LNG_Email}, {LNG_Phone}']),
             'title' => '{LNG_Borrower}',
             'value' => $index->borrower,
-            'autofocus' => true
-        ]);
-                $groups = $fieldset->add('groups'); // ย้ายขึ้นมาให้อยู่จุดที่เหมาะสม
-
+            'autofocus' => true,
+            'readonly' => true
+        ));
         $groups->add('number', array(
             'id' => 'id_card',
             'labelClass' => 'g-input icon-number',
             'itemClass' => 'width20',
             'label' => 'รหัสประจำตัว',
             'title' => 'รหัสประจำตัว',
-            'value' => isset($index->id_card) ? $index->id_card : '',
+            'value' => $index->id_card,
             'autofocus' => true,
             'readonly' => true
         ));
-
         $groups->add('text', array(
             'id' => 'major',
             'labelClass' => 'g-input icon-profile',
             'itemClass' => 'width20',
             'label' => 'สาขาวิชา',
             'title' => 'สาขาวิชา',
-            'value' => isset($index->major) ? $index->major : '',
+            'value' => $index->major,
             'autofocus' => true,
             'readonly' => true
         ));
-
         $groups->add('number', array(
             'id' => 'phone',
             'labelClass' => 'g-input icon-phone',
             'itemClass' => 'width20',
             'label' => 'เบอร์ติดต่อ',
             'title' => 'เบอร์ติดต่อ',
-            'value' => isset($index->phone) ? $index->phone : '',
+            'value' => $index->phone,
             'autofocus' => true,
             'readonly' => true
         ));
-
+        $groups = $fieldset->add('groups');
+        $groups->add('text', array(
+            'id' => 'address',
+            'labelClass' => 'g-input icon-address',
+            'itemClass' => 'width40',
+            'label' => 'ที่อยู่',
+            'title' => 'ที่อยู่',
+            'value' => $index->address,
+            'autofocus' => true,
+            'readonly' => true
+        ));
+        $groups->add('text', array(
+            'id' => 'province',
+            'labelClass' => 'g-input icon-location',
+            'itemClass' => 'width20',
+            'label' => 'จังหวัด',
+            'title' => 'จังหวัด',
+            'value' => $index->province,
+            'autofocus' => true,
+            'readonly' => true
+        ));
+        $groups->add('text', array(
+            'id' => 'country',
+            'labelClass' => 'g-input icon-world',
+            'itemClass' => 'width20',
+            'label' => '{LNG_Country}',
+            'title' => '{LNG_Country}',
+            'datalist' => \Kotchasan\Country::all(),
+            'value' => $index->country,
+            'autofocus' => true,
+            'readonly' => true
+        ));
+        $groups->add('text', array(
+            'id' => 'zipcode',
+            'labelClass' => 'g-input icon-number',
+            'itemClass' => 'width40',
+            'label' => 'รหัสไปรษณีย์',
+            'title' => 'รหัสไปรษณีย์',
+            'value' => $index->zipcode,
+            'autofocus' => true,
+            'readonly' => true
+        ));
+        $fieldset = $form->add('fieldset', array(
+            'title' => '{LNG_Details of} อาจารย์ที่ปรึกษา',
+            'titleClass' => 'icon-profile'
+        ));
+        $groups = $fieldset->add('groups');
+        $groups->add('text', array(
+            'id' => 'p_name',
+            'labelClass' => 'g-input icon-customer',
+            'itemClass' => 'width40',
+            'label' => 'อาจารย์ที่ปรึกษา',
+            'title' => 'อาจารย์ที่ปรึกษา',
+            'value' => $index->p_name,
+            'autofocus' => true,
+            'readonly' => true
+        ));
+        $groups->add('text', array(
+            'id' => 'p_phone',
+            'labelClass' => 'g-input icon-phone',
+            'itemClass' => 'width40',
+            'label' => 'เบอร์ติดต่อ',
+            'title' => 'เบอร์ติดต่อ',
+            'value' => $index->p_phone,
+            'autofocus' => true,
+            'readonly' => true
+        ));
+        
         // borrower_id
-        $fieldset->add('hidden', [
+        $fieldset->add('hidden', array(
             'id' => 'borrower_id',
             'value' => $index->borrower_id
-        ]);
-        $fieldset = $form->add('fieldset', [
+        ));
+        $fieldset = $form->add('fieldset', array(
             'title' => '{LNG_Transaction details}',
             'titleClass' => 'icon-cart'
-        ]);
+        ));
         $groups = $fieldset->add('groups');
         // borrow_no
-        $groups->add('text', [
+        $groups->add('text', array(
             'id' => 'borrow_no',
             'labelClass' => 'g-input icon-number',
             'itemClass' => 'width50',
             'label' => '{LNG_Transaction No.}',
             'placeholder' => '{LNG_Leave empty for generate auto}',
-            'value' => $index->borrow_no
-        ]);
+            'value' => $index->borrow_no,
+            'readonly' => true
+        ));
         // transaction_date
-        $groups->add('date', [
+        $groups->add('date', array(
             'id' => 'transaction_date',
             'labelClass' => 'g-input icon-calendar',
             'itemClass' => 'width50',
             'label' => '{LNG_Transaction date}',
-            'value' => $index->transaction_date
-        ]);
+            'value' => $index->transaction_date,
+            'readonly' => true
+        ));
         $groups = $fieldset->add('groups');
         // borrow_date
-        $groups->add('date', [
+        $groups->add('date', array(
             'id' => 'borrow_date',
             'labelClass' => 'g-input icon-calendar',
             'itemClass' => 'width50',
-            'label' => '{LNG_Borrowed date}',
+            'label' => 'วันที่ส่งมอบ',
             'value' => $index->borrow_date
-        ]);
+        ));
+
         // return_date
-        $groups->add('date', [
-            'id' => 'return_date',
-            'labelClass' => 'g-input icon-calendar',
-            'itemClass' => 'width50',
-            'label' => '{LNG_Date of return}',
-            'value' => $index->return_date
-        ]);
+
         $borrow_status = Language::get('BORROW_STATUS');
         $table = '<table class="fullwidth data border"><thead><tr>';
         $table .= '<th>{LNG_Detail}</th>';
@@ -155,32 +216,32 @@ class View extends \Gcms\View
         }
         $table .= '</tbody>';
         $table .= '</table>';
-        $fieldset->add('div', [
+        $fieldset->add('div', array(
             'class' => 'item',
             'innerHTML' => $table
-        ]);
-        $fieldset = $form->add('fieldset', [
+        ));
+        $fieldset = $form->add('fieldset', array(
             'class' => 'submit right'
-        ]);
+        ));
         if (self::$cfg->noreply_email != '') {
-            $fieldset->add('checkbox', [
+            $fieldset->add('checkbox', array(
                 'id' => 'send_mail',
                 'labelClass' => 'inline-block middle',
                 'label' => '&nbsp;{LNG_Email the relevant person}',
                 'value' => 1
-            ]);
+            ));
         }
         // submit
-        $fieldset->add('submit', [
+        $fieldset->add('submit', array(
             'class' => 'button ok large',
             'id' => 'order_submit',
             'value' => '{LNG_Save}'
-        ]);
+        ));
         // borrow_id
-        $fieldset->add('hidden', [
+        $fieldset->add('hidden', array(
             'id' => 'borrow_id',
             'value' => $index->id
-        ]);
+        ));
         // Javascript
         $form->script('initBorrowOrder();');
         // คืนค่า HTML
