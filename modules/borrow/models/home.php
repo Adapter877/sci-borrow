@@ -99,7 +99,13 @@ class Model extends \Kotchasan\Model
                 ->select(Sql::COUNT())
                 ->from('borrow W')
                 ->join('borrow_items S', 'INNER', array('S.borrow_id', 'W.id'))
-                ->where(array('S.status', 5));
+                ->where(array('S.status', 5));            
+            $q9 = static::createQuery()
+                ->select(Sql::COUNT())
+                ->from('borrow W')
+                ->join('borrow_items S', 'INNER', ['S.borrow_id', 'W.id'])
+                ->where(['S.status', 3]);
+
             return static::createQuery()->cacheOn()->first([
                 $q0, 'pending'],
                 [$q1, 'returned'],
@@ -110,6 +116,7 @@ class Model extends \Kotchasan\Model
                 [$q6, 'allreturned'],
                 [$q7, 'unactive'],
                 [$q8, 'alldelivered'],
+                [$q8, 'allreturned1'],
                 
 
 

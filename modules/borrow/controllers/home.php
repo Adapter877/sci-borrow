@@ -50,6 +50,7 @@ class Controller extends \Gcms\Controller
             );
             \Index\Home\Controller::renderCard($card, 'icon-warning text-danger', $login['name'], number_format($items->allreturned), ' {LNG_Un-Returned items}', 'index.php?module=borrow-report&status=2&due=1');
             \Index\Home\Controller::renderCard($card,'icon-valid', $login['name'],number_format($items->alldelivered),' ' . Language::get('รายการส่งมอบแล้ว', null, 4),'index.php?module=borrow-report&status=5');
+            \Index\Home\Controller::renderCard($card,'icon-valid', $login['name'],number_format($items->allreturned1),' ' . Language::get('รายการคืนแล้ว', null, 4),'index.php?module=borrow-report&status=3');
 
 
             }
@@ -65,7 +66,7 @@ class Controller extends \Gcms\Controller
                     ' '.Language::get('ส่งมอบ', null, 0),  // ป้ายสถานะส่งมอบ
                     'index.php?module=borrow-setup&amp;status=5' // ลิงก์ที่ตรงกับสถานะส่งมอบ
                 );
-    
+                
             }
         }
     }
