@@ -233,7 +233,7 @@ class View extends \Gcms\View
         $groups->add('text', array(
             'id' => 'register_p_name',
             'labelClass' => 'g-input icon-customer',
-            'itemClass' => 'width50',
+            'itemClass' => 'width35',
             'label' => 'อาจารย์ที่ปรึกษา',
             'value' => $user['p_name']
         ));
@@ -245,6 +245,24 @@ class View extends \Gcms\View
             'maxlength' => 10,
             'value' => $user['p_phone']
         ));
+        $groups = $fieldset->add('groups');
+        $groups->add('text', array(
+            'id' => 'register_t_name',
+            'labelClass' => 'g-input icon-phone',
+            'itemClass' => 'width35',
+            'label' => 'อาจารย์ผู้สอน',
+            'maxlength' => 30,
+            'value' => $user['t_name']
+        ));
+        $groups->add('text', array(
+            'id' => 'register_t_phone',
+            'labelClass' => 'g-input icon-phone',
+            'itemClass' => 'width35',
+            'label' => 'เบอร์ติดต่อ อาจารย์ผู้สอน',
+            'maxlength' => 10,
+            'value' => $user['t_phone']
+        ));
+        
         if (!empty(self::$cfg->line_official_account) && !empty(self::$cfg->line_channel_access_token) && $user['social'] != 3) {
             // line_uid
             $fieldset->add('text', array(

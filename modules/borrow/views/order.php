@@ -153,6 +153,27 @@ class View extends \Gcms\View
             'autofocus' => true,
             'readonly' => true
         ));
+        $groups = $fieldset->add('groups');
+        $groups->add('text', array(
+            'id' => 't_name',
+            'labelClass' => 'g-input icon-user',
+            'itemClass' => 'width40',
+            'label' => 'ชื่ออาจารย์ผู้สอน',
+            'title' => 'ชื่ออาจารย์ผู้สอน',
+            'value' => $index->t_name,
+            'autofocus' => true,
+            'readonly' => true
+        ));
+        $groups->add('text', array(
+            'id' => 't_phone',
+            'labelClass' => 'g-input icon-user',
+            'itemClass' => 'width40',
+            'label' => 'เบอร์ติดต่อ อาจารย์ผู้สอน',
+            'title' => 'เบอร์ติดต่อ อาจารย์ผู้สอน',
+            'value' => $index->t_phone,
+            'autofocus' => true,
+            'readonly' => true
+        ));        
         
         // borrower_id
         $fieldset->add('hidden', array(

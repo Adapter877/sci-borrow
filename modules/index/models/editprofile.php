@@ -91,6 +91,8 @@ class Model extends \Kotchasan\Model
                         'major' => $request->post('register_major')->topic(),
                         'p_name' => $request->post('register_p_name')->topic(),
                         'p_phone' => $request->post('register_p_phone')->number(),
+                        't_name' => $request->post('register_t_name')->topic(),
+                        't_phone' => $request->post('register_t_phone')->topic(),
                     );
                     // ชื่อตาราง
                     $table_user = $this->getTableName('user');
