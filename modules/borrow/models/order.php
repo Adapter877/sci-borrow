@@ -34,12 +34,12 @@ class Model extends \Kotchasan\Model
     public static function get($id)
     {
         return static::createQuery()
-        
             ->from('borrow B')
             ->join('user U', 'LEFT', ['U.id', 'B.borrower_id'])
             ->where(['B.id', $id])
-            ->first('B.*', 'U.name AS borrower', 'U.major AS major', 'U.phone AS phone', 'U.id_card AS id_card', 'U.address AS address', 'U.province AS province', 'U.country AS country', 'U.zipcode AS zipcode','U.p_name','U.p_phone','t_name','t_phone');
-        }
+            ->first('B.*', 'U.name borrower', 'U.major major', 'U.phone phone', 'U.id_card id_card', 'U.p_name p_name', 
+            'U.p_phone p_phone', 'U.address address', 'U.province province', 'U.country country', 'U.zipcode zipcode');
+    }
 
     /**
      * อ่านรายการพัสดุในใบยืม
@@ -51,7 +51,7 @@ class Model extends \Kotchasan\Model
     public static function items($borrow_id)
     {
         return static::createQuery()
-            ->select('S.borrow_id', 'S.id', 'S.num_requests', 'S.product_no', 'S.topic', 'S.unit',
+            ->select('S.borrow_id', 'S.id', 'S.num_requests','S.detail', 'S.product_no', 'S.topic', 'S.unit',
                 'S.amount', 'S.status', 'I.stock')
             ->from('borrow_items S')
             ->join('inventory_items I', 'INNER', ['I.product_no', 'S.product_no'])

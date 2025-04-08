@@ -112,11 +112,7 @@ class Model extends \Kotchasan\Model
                         'borrow_no' => $request->post('borrow_no')->topic(),
                         'transaction_date' => $request->post('transaction_date')->date(),
                         'borrow_date' => $request->post('borrow_date')->date(),
-                        'return_date' => $request->post('return_date')->date(),
-                        'techer' => $request->post('techer')->topic(),
-                        'techerMajors' => $request->post('techerMajors')->topic(),
-                        'use_date' => $request->post('use_date')->date(),
-                        'useFor' => $request->post('useFor')->topic(),
+                        'return_date' => $request->post('return_date')->date()
                     ];
                     // ตรวจสอบรายการที่เลือก
                     $borrow = self::get($request->post('borrow_id')->toInt(), $login);

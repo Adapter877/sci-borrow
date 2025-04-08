@@ -36,12 +36,12 @@ class Model extends \Kotchasan\Model
     {
         return static::createQuery()
             ->from('borrow_items S')
-            ->join('inventory_items I', 'INNER', array('I.product_no', 'S.product_no'))
-            ->join('inventory V', 'INNER', array('V.id', 'I.inventory_id'))
-            ->where(array(
-                array('S.borrow_id', $borrow_id),
-                array('S.id', $id)
-            ))
+            ->join('inventory_items I', 'INNER', ['I.product_no', 'S.product_no'])
+            ->join('inventory V', 'INNER', ['V.id', 'I.inventory_id'])
+            ->where([
+                ['S.borrow_id', $borrow_id],
+                ['S.id', $id]
+            ])
             ->first('S.borrow_id', 'S.id', 'S.product_no', 'S.topic', 'S.amount', 'S.num_requests','S.detail', 'S.status', 'I.stock', 'S.unit', 'V.count_stock');
     }
 
@@ -83,16 +83,16 @@ class Model extends \Kotchasan\Model
                                     $ret['ret_amount'] = Language::get('The amount delivered is greater than the amount borrowed');
                                 } elseif ($index->count_stock == 0) {
                                     // stock ไม่จำกัด อัปเดตรายการ
-                                    $save = array('amount' => $index->amount + $amount, 'status' => $status);
+                                    $save = ['amount' => $index->amount + $amount, 'status' => $status];
                                 } else {
                                     if ($amount > $index->stock) {
                                         // สต๊อคไม่เพียงพอ
-                                        $ret['ret_amount'] = Language::replace('There is not enough :name (remaining :stock :unit)', array(':name' => $index->topic, ':stock' => $index->stock, ':unit' => $index->unit));
+                                        $ret['ret_amount'] = Language::replace('There is not enough :name (remaining :stock :unit)', [':name' => $index->topic, ':stock' => $index->stock, ':unit' => $index->unit]);
                                     } else {
                                         // ตัดสต๊อค
-                                        $save = array('amount' => $index->amount + $amount, 'status' => $status);
+                                        $save = ['amount' => $index->amount + $amount, 'status' => $status];
                                         // อัปเดตรายการ
-                                        $stock = array('stock' => $index->stock - $amount);
+                                        $stock = ['stock' => $index->stock - $amount];
                                     }
                                 }
                             }
@@ -100,7 +100,7 @@ class Model extends \Kotchasan\Model
                             if ($amount > 0) {
                                 if ($index->count_stock == 0) {
                                     // stock ไม่จำกัด อัปเดตรายการ
-                                    $save = array('amount' => $index->amount - $amount, 'status' => $status);
+                                    $save = ['amount' => $index->amount - $amount, 'status' => $status];
                                 } else {
                                     if ($status == 3 && $amount != $index->amount) {
                                         // จำนวนที่คืนไม่เท่ากับจำนวนที่ส่งมอบ
@@ -110,33 +110,30 @@ class Model extends \Kotchasan\Model
                                         $ret['alert'] = Language::get('The amount returned is greater than the amount delivered');
                                     } else {
                                         // ตัดสต๊อค
-                                        $save = array('amount' => $index->amount - $amount, 'status' => $status);
+                                        $save = ['amount' => $index->amount - $amount, 'status' => $status];
                                         // อัปเดตรายการ
-                                        $stock = array('stock' => $index->stock + $amount);
+                                        $stock = ['stock' => $index->stock + $amount];
                                     }
                                 }
                             }
                         }
                         if (empty($ret)) {
                             if (isset($stock)) {
-                                $this->db()->update($this->getTableName('inventory_items'), array('product_no', $index->product_no), $stock);
+                                $this->db()->update($this->getTableName('inventory_items'), ['product_no', $index->product_no], $stock);
                             }
                             if (isset($save)) {
                                 $save['detail'] = $detail;
                                 // บันทึก borrow_items
-                                $this->db()->update($this->getTableName('borrow_items'), array(
-                                    array('borrow_id', $index->borrow_id),
-                                    array('id', $index->id)
-                                ), $save);
+                                $this->db()->update($this->getTableName('borrow_items'), [
+                                    ['borrow_id', $index->borrow_id],
+                                    ['id', $index->id]
+                                ], $save);
                                 // คืนค่า สถานะ
                                 $ret['status_'.$index->id] = Language::get('BORROW_STATUS', null, $save['status']);
                                 $ret['elem'] = 'status_'.$index->id;
                                 $ret['class'] = 'term'.$save['status'];
                                 if (isset($save['amount'])) {
                                     $ret['amount_'.$index->id] = $save['amount'];
-                                }
-                                if (isset($save['detail'])) {
-                                    $ret['detail_'.$index->id] = $save['detail'];
                                 }
                                 // log
                                 \Index\Log\Model::add($index->borrow_id, 'borrow', 'Status', $index->topic.' '.$ret['status_'.$index->id], $login['id']);

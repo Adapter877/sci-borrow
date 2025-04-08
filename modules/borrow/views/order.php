@@ -129,7 +129,7 @@ class View extends \Gcms\View
             'readonly' => true
         ));
         $fieldset = $form->add('fieldset', array(
-            'title' => '{LNG_Details of} อาจารย์ที่ปรึกษา',
+            'title' => '{LNG_Details of} อาจารย์ที่ปรึกษาและผู้สอน',
             'titleClass' => 'icon-profile'
         ));
         $groups = $fieldset->add('groups');
@@ -155,26 +155,48 @@ class View extends \Gcms\View
         ));
         $groups = $fieldset->add('groups');
         $groups->add('text', array(
-            'id' => 't_name',
-            'labelClass' => 'g-input icon-user',
+            'id' => 'techer',
+            'labelClass' => 'g-input icon-customer',
             'itemClass' => 'width40',
-            'label' => 'ชื่ออาจารย์ผู้สอน',
-            'title' => 'ชื่ออาจารย์ผู้สอน',
-            'value' => $index->t_name,
+            'label' => 'อาจารย์ผู้สอน',
+            'title' => 'อาจารย์ผู้สอน',
+            'value' => isset($index->techer) ? $index->techer : '', // ตรวจสอบค่าจาก $index
             'autofocus' => true,
             'readonly' => true
         ));
+        
         $groups->add('text', array(
-            'id' => 't_phone',
-            'labelClass' => 'g-input icon-user',
+            'id' => 'techerMajors',
+            'labelClass' => 'g-input icon-profile',
             'itemClass' => 'width40',
-            'label' => 'เบอร์ติดต่อ อาจารย์ผู้สอน',
-            'title' => 'เบอร์ติดต่อ อาจารย์ผู้สอน',
-            'value' => $index->t_phone,
+            'label' => 'สาขา',
+            'title' => 'สาขา',
+            'value' => isset($index->techerMajors) ? $index->techerMajors : '', // ตรวจสอบค่าจาก $index
             'autofocus' => true,
             'readonly' => true
-        ));        
+        ));
         
+        $groups->add('text', array(
+            'id' => 'useFor',
+            'labelClass' => 'g-input icon-menus',
+            'itemClass' => 'width40',
+            'label' => 'จุดประสงค์ที่เบิก',
+            'title' => 'จุดประสงค์ที่เบิก',
+            'value' => isset($index->useFor) ? $index->useFor : '', // ตรวจสอบค่าจาก $index
+            'autofocus' => true,
+            'readonly' => true
+        ));
+        
+        $groups = $fieldset->add('groups');
+        $groups->add('date', array(
+            'id' => 'use_date',
+            'labelClass' => 'g-input icon-calendar',
+            'itemClass' => 'width50',
+            'label' => 'วันที่ต้องการใช้',
+            'value' => isset($index->use_date) ? $index->use_date : '', // ตรวจสอบค่าจาก $index
+            'readonly' => true
+        ));
+                
         // borrower_id
         $fieldset->add('hidden', array(
             'id' => 'borrower_id',
@@ -222,6 +244,7 @@ class View extends \Gcms\View
         $table .= '<th>{LNG_Quantity}</th>';
         $table .= '<th>{LNG_Delivery}</th>';
         $table .= '<th>{LNG_Status}</th>';
+        $table .= '<th>หมายเหตุ</th>';
         $table .= '<th colspan="3"></th>';
         $table .= '</tr></thead><tbody id=tb_products>';
         foreach (\Borrow\Order\Model::items($index->id) as $item) {
@@ -229,10 +252,16 @@ class View extends \Gcms\View
             $table .= '<td><a id="product_no_'.$item['product_no'].'">'.$item['topic'].' ('.$item['product_no'].')</a></td>';
             $table .= '<td class="center">'.$item['num_requests'].'</td>';
             $table .= '<td class="center" id="amount_'.$item['id'].'">'.$item['amount'].'</td>';
+            // $table .= '<td class="center">'.$item['detail'].'</td>';
             $table .= '<td class="center"><span class="term'.$item['status'].'" id="status_'.$item['id'].'">'.$borrow_status[$item['status']].'</span></td>';
-            $table .= '<td class="center"><a id=delivery_'.$item['borrow_id'].'_'.$item['id'].' class="button icon-outbox green">{LNG_Delivery}</a></td>';
-            $table .= '<td class="center"><a id=return_'.$item['borrow_id'].'_'.$item['id'].' class="button icon-inbox blue">{LNG_Return}</a></td>';
-            $table .= '<td class="center"><a id=status_'.$item['borrow_id'].'_'.$item['id'].' class="button icon-star0 red">{LNG_Status update}</a></td>';
+            $table .= '<td class="center" id="detail_'.$item['id'].'">'.$item['detail'].'</td>';
+            if ($item['status'] != 1 && $item['status'] != 3 && $item['status'] != 4 && $item['status'] != 5) {
+                $table .= '<td class="center"><a id=delivery_'.$item['borrow_id'].'_'.$item['id'].' class="button icon-outbox green">{LNG_Delivery}</a></td>';
+                $table .= '<td class="center"><a id=return_'.$item['borrow_id'].'_'.$item['id'].' class="button icon-inbox blue">{LNG_Return}</a></td>';
+                $table .= '<td class="center"><a id=status_'.$item['borrow_id'].'_'.$item['id'].' class="button icon-star0 red">{LNG_Status update}</a></td>';
+            }
+
+
             $table .= '</tr>';
         }
         $table .= '</tbody>';

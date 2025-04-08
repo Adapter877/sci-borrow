@@ -9,7 +9,7 @@
  */
 
 namespace Borrow\Index;
-use Kotchasan\Language;
+
 use Kotchasan\Html;
 
 /**
@@ -73,54 +73,6 @@ class View extends \Gcms\View
             'label' => '{LNG_Borrowed date}',
             'value' => $index->borrow_date
         ]);
-        $groups->add('text', array(
-            'id' => 'techer',
-            'labelClass' => 'g-input icon-customer',
-            'itemClass' => 'width25',
-            'label' => 'อาจารย์ผู้สอน',
-            'value' => $index->techer,
-        ));
-        $groups = $fieldset->add('groups');
-        $groups->add('date', array(
-            'id' => 'use_date',
-            'labelClass' => 'g-input icon-calendar',
-            'itemClass' => 'width15',
-            'label' => 'วันที่ต้องการใช้',
-            'value' => $index->use_date
-        ));
-        $groups->add('select', array(
-            'id' => 'techerMajors',
-            'labelClass' => 'g-input icon-menus',
-            'itemClass' => 'width30',
-            'options' => Language::get('MAJORS'),
-            'label' => 'รายวิชา',
-        ));
-        $groups = $fieldset->add('groups');
-        $groups->add('date', array(
-            'id' => 'use_date',
-            'labelClass' => 'g-input icon-calendar',
-            'itemClass' => 'width15',
-            'label' => 'วันที่ต้องการใช้',
-            'value' => $index->use_date
-        ));
-        $usefors = Language::get('USEFORS');
-
-        // ตรวจสอบสิทธิ์ของผู้ใช้
-        $login = \Gcms\Login::isMember();
-        if (!in_array($login['status'], array(1, 2))) {
-            // ถ้าไม่ใช่แอดมินหรือ status 3 ให้ลบ 'บริการวิชาการ'
-            unset($usefors['บริการวิชาการ']);
-        }
-
-        // เพิ่ม select ลงในฟอร์ม
-        $groups->add('select', array(
-            'id' => 'useFor',
-            'labelClass' => 'g-input icon-menus',
-            'itemClass' => 'width40',
-            'options' => $usefors,
-            'label' => 'จุดประสงค์ของการเบิก',
-        ));
-
         // return_date
         $groups->add('date', [
             'id' => 'return_date',
@@ -138,7 +90,6 @@ class View extends \Gcms\View
             'label' => '{LNG_Quantity}',
             'value' => 1
         ]);
-        
         // inventory
         $groups->add('text', [
             'id' => 'inventory',
