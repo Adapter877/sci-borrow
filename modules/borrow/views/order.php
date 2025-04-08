@@ -235,7 +235,13 @@ class View extends \Gcms\View
             'label' => 'วันที่ส่งมอบ',
             'value' => $index->borrow_date
         ));
-
+        $groups->add('date', array(
+            'id' => 'return_date',
+            'labelClass' => 'g-input icon-calendar',
+            'itemClass' => 'width50',
+            'label' => 'วันที่คืน',
+            'value' => $index->return_date
+        ));
         // return_date
 
         $borrow_status = Language::get('BORROW_STATUS');
