@@ -1,10 +1,10 @@
-version: '3.7'
-
+# ค่าลับทั้งหมดมาจาก .env (ดูตัวอย่างที่ .env.example)
+# คอมโพสจะไม่ยอมสตาร์ตถ้ายังไม่ได้ตั้งรหัสผ่าน แทนที่จะเงียบ ๆ ใช้ค่าเริ่มต้น
 services:
   web:
     build: .
     ports:
-      - "8080:80"
+      - "${WEB_PORT:-8080}:80"
     volumes:
       - ./:/var/www/html
     depends_on:
@@ -14,11 +14,11 @@ services:
     image: mysql:latest
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: password
-      MYSQL_DATABASE: borrow
-      MYSQL_USER: sak
-      MYSQL_PASSWORD: ***REDACTED***
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?ตั้งค่าใน .env ก่อน}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-borrow}
+      MYSQL_USER: ${MYSQL_USER:-borrow}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:?ตั้งค่าใน .env ก่อน}
     ports:
-      - "3306:3306"
+      - "${MYSQL_PORT:-3306}:3306"
     volumes:
       - ./mysql-data:/var/lib/mysql

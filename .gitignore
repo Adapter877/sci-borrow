@@ -1,0 +1,22 @@
+# ค่าเฉพาะเครื่อง / ความลับ — ห้ามคอมมิต
+.env
+.env.local
+settings/config.php
+settings/database.php
+
+# ข้อมูลที่แอปสร้างตอนรัน
+datas/cache/*.php
+!datas/cache/index.php
+datas/logs/*.php
+!datas/logs/index.php
+datas/backup/
+mysql-data/
+
+# ของระบบปฏิบัติการ / เอดิเตอร์
+.DS_Store
+._*
+Thumbs.db
+.idea/
+.vscode/
+*.log
+*.swp
